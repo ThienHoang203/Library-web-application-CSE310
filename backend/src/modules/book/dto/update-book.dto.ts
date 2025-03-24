@@ -5,7 +5,7 @@ import { IsOptional } from 'class-validator';
 export default class UpdateBookDto extends PickType(CreateBookDto, [
   'author',
   'description',
-  'gerne',
+  'genre',
   'publishedDate',
   'stock',
   'title',

@@ -61,7 +61,7 @@ export class BookService {
   async searchBooks({
     author,
     format,
-    gerne,
+    genre,
     publishedDate,
     stock,
     title,
@@ -72,7 +72,7 @@ export class BookService {
     if (title) where.title = Like(`%${title}%`);
     if (author) where.author = Like(`%${author}%`);
     if (format) where.format = format;
-    if (gerne) where.gerne = gerne;
+    if (genre) where.gerne = genre;
     if (publishedDate) where.publishedDate = publishedDate;
     if (stock) where.stock = stock;
     if (version) where.version = version;
@@ -82,7 +82,7 @@ export class BookService {
         'id',
         'title',
         'author',
-        'gerne',
+        'genre',
         'format',
         'publishedDate',
         'version',
