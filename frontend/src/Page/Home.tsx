@@ -24,6 +24,12 @@ export default function Home() {
 
   },[token])
   
+
+  console.log(token);
+
+
+
+
   return (
     <>
       <MainHeader />
