@@ -7,7 +7,7 @@ import CreateBookDto from './create-book.dto';
 export default class SearchBookDto extends PickType(CreateBookDto, [
   'title',
   'author',
-  'gerne',
+  'genre',
   'format',
   'publishedDate',
   'version',
@@ -29,7 +29,7 @@ export default class SearchBookDto extends PickType(CreateBookDto, [
     message: `format phải là ${Object.values(BookFormat).join(' hoặc ')}.`,
   })
   @IsOptional()
-  gerne: BookGerne;
+  genre: BookGerne;
 
   @IsValidBirthDate()
   @IsOptional()
