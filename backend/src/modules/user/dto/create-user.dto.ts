@@ -47,6 +47,5 @@ export default class CreateUserDto extends PickType(User, [
 
   @MaxLength(50, { message: 'tên người dùng không được vượt quá 50 kí tự' })
   @IsString({ message: 'tên người dùng phải là chuỗi' })
-  @IsOptional({ always: true })
   name: string;
 }

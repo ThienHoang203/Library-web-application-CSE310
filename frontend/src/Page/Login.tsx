@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { LoginNormal } from "../Data/Api";
 import { LoginType } from "../types/auth.type";
+import { toast } from "react-toastify";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -16,19 +17,72 @@ export default function Login() {
         mode: "onBlur"
     });
 
-    const onSubmit = (user: LoginType) => {
-        LoginNormal("/auth/login", user).then((result) => {
-            // dispatch({
-            //   type: "login",
-            //   token: result.data.access_token.token,
-            // });
-            localStorage.setItem("token", result.data.access_token.token);
-        });
+    // const onSubmit = as (user: LoginType) => {
+    //     LoginNormal("/auth/login", user).then((data) =>
+    //         setTimeout(() => {
+    //             if (data) {
+    //                 localStorage.setItem("token", data.token);
+    //                 setTimeout(() => navigate("/", { replace: false }), 1000);
+    //             }
+    //         }, 1000)
+    //     ),
+    //         {
+    //             pending: {
+    //                 render: "Vui lòng chờ xác thực.",
+    //                 autoClose: 1000 // Tự động đóng thông báo pending sau 1 giây
+    //             },
+    //             success: {
+    //                 render: "Đăng nhập thành công ở",
+    //                 autoClose: 1000
+    //             },
+    //             error: {
+    //                 render: "Đăng nhập thất bại ở",
+    //                 autoClose: 1000
+    //             }
+    //         };
+    // };
 
-        console.log("Login Success:", user);
-        setTimeout(() => navigate("/", { replace: false }), 1000);
-        setTimeout(() => window.location.reload(), 1500);
-    };
+    async function onSubmit(user: LoginType) {
+        toast.promise(
+            LoginNormal("/auth/login", user).then((data) => {
+                if (data) {
+                    localStorage.setItem("token", data.token);
+                    setTimeout(() => navigate("/", { replace: true }), 1000);
+                    setTimeout(() => window.location.reload(), 1500);
+                }
+            }),
+            {
+                pending: {
+                    render: "Vui lòng chờ xác thực",
+                    autoClose: 500
+                },
+                success: {
+                    render: "Promise resolved 👌",
+                    autoClose: 1000,
+                    delay: 500
+                },
+                error: {
+                    render({ data }) {
+                        if (
+                            !data ||
+                            typeof data !== "object" ||
+                            !("response" in data) ||
+                            typeof data.response !== "object" ||
+                            data.response === null ||
+                            !("data" in data.response) ||
+                            typeof data.response.data !== "object" ||
+                            data.response.data === null ||
+                            !("message" in data.response.data) ||
+                            typeof data.response.data.message !== "string"
+                        )
+                            return "Đăng nhập không thành công🤯";
+                        return data.response.data.message;
+                    },
+                    delay: 500
+                }
+            }
+        );
+    }
 
     return (
         <div className="text-center wrapper-login mx-auto my-5 relative w-xl border-2 border-black rounded-2xl shadow-[0px_0px_20px_rgba(0,0,0,1)]">

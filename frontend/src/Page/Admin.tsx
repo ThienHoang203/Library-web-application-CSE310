@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import Register from "./Register";
+import CreateNewBook from "../Component/CreateNewBook";
 
 export default function Admin() {
     const navigate = useNavigate();
     const [showForm, setShowForm] = useState(false);
+    const [showBookForm, setShowBookForm] = useState(false);
     const user = JSON.parse(localStorage.getItem("user") ?? "");
-    console.log({ user });
+    const setShowFormFalse = useCallback(() => {
+        setShowForm(false);
+    }, []);
+
+    const setShowBookFormFalse = useCallback(() => {
+        setShowBookForm(false);
+    }, []);
 
     if (!user || !user?.role || user.role !== "admin") return <Navigate to={"/"} />;
 
@@ -43,7 +51,10 @@ export default function Admin() {
             <div className="bg-white w-full h-screen flex flex-col px-5">
                 <div className="w-full h-[80px] bg-white border-b-3 border-[rgba(0,0,0,0.4)] flex justify-between">
                     <div className="h-[70px] w-[440px]">
-                        <button className="px-3 bg-blue-500 mt-4 ml-10 p-2 rounded border-2 cursor-pointer text-white hover:text-blue-500 hover:bg-white hover:boder-blue-500">
+                        <button
+                            onClick={() => setShowBookForm(true)}
+                            className="px-3 bg-blue-500 mt-4 ml-10 p-2 rounded border-2 cursor-pointer text-white hover:text-blue-500 hover:bg-white hover:boder-blue-500"
+                        >
                             Add Book
                         </button>
                         <button
@@ -71,7 +82,15 @@ export default function Admin() {
                 {showForm && (
                     <div className="fixed inset-0 flex items-center justify-center  text-center">
                         {" "}
-                        <Register endPoint="auth/signup/admin" />{" "}
+                        <Register endPoint="auth/signup/admin" closeFunction={setShowFormFalse} />{" "}
+                    </div>
+                )}
+            </div>
+            <div>
+                {showBookForm && (
+                    <div className="fixed inset-0 flex items-center justify-center  text-center">
+                        {" "}
+                        <CreateNewBook endPoint="book" closeFunction={setShowBookFormFalse} />{" "}
                     </div>
                 )}
             </div>

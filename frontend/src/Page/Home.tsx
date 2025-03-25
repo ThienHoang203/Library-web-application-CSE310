@@ -1,26 +1,36 @@
 import Category from "../Component/MainCategory";
 import MainHeader from "../Component/MainHeader";
 import Footer from "../Component/Footer";
-import { useNavigate } from "react-router-dom";
-import { FormEvent, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getUser } from "../Data/Api";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
     const navigate = useNavigate();
+    const [searchData, setSearchData] = useState({
+        title: "",
+        author: "",
+        stock: "",
+        genre: ""
+    });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchData({ ...searchData, [e.target.name]: e.target.value });
+    };
 
-    function handleSearchSubmit(e: FormEvent<HTMLFormElement>) {
-        const formData = new FormData(e.currentTarget);
-        const search = formData.get("search") as string;
-        navigate(`/search?search=${search}`);
-    }
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        console.log(searchData);
+        navigate("/search", { state: searchData });
+    };
+
     const token = localStorage.getItem("token");
 
     useEffect(() => {
         if (token)
             getUser("/user/profile", token).then((result) => {
                 console.log({ result });
-
+                console.log("Navigating with params:", searchData);
                 if (!result) {
                     toast.error("dang nhap khong thanh cong");
                     return;
@@ -45,10 +55,12 @@ export default function Home() {
                             Search
                         </h2>
                     </div>
-                    <form className="search bg-[#acacac] p-9 mx-auto rounded-2xl" onSubmit={handleSearchSubmit}>
+                    <form className="search bg-[#acacac] p-9 mx-auto rounded-2xl" onSubmit={handleSubmit}>
                         <input
                             type="text"
-                            name="search"
+                            name="title"
+                            value={searchData.title}
+                            onChange={handleChange}
                             className="w-[600px] h-10 px-2 text-[20px] border-3 border-transparent focus:border-[#ccb552] focus:outline-none rounded-md bg-white"
                         />
                         <button
