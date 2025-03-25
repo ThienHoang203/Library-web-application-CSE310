@@ -66,13 +66,13 @@ export class BookService {
     stock,
     title,
     version,
-  }: SearchBookDto): Promise<{ totalBooks: number; users: Book[] }> {
+  }: SearchBookDto): Promise<{ totalBooks: number; books: Book[] }> {
     let books: Book[];
     let where: any = {};
     if (title) where.title = Like(`%${title}%`);
     if (author) where.author = Like(`%${author}%`);
     if (format) where.format = format;
-    if (genre) where.gerne = genre;
+    if (genre) where.genre = genre;
     if (publishedDate) where.publishedDate = publishedDate;
     if (stock) where.stock = stock;
     if (version) where.version = version;
@@ -94,7 +94,7 @@ export class BookService {
     });
     return {
       totalBooks: books.length,
-      users: books,
+      books,
     };
   }
 

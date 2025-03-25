@@ -43,6 +43,19 @@ export type Book = {
     version: number;
 };
 
+export type CreateBookType = {
+    author: string;
+    title: string;
+    genre?: BookGerne;
+    description?: string;
+    format: BookFormat;
+    stock?: number;
+    publishedDate?: Date;
+    version?: number;
+    ebookFile?: FileList;
+    coverImageFile?: FileList;
+};
+
 type bookHeaders = Omit<
     Book,
     "coverImageFilename" | "contentFilename" | "description" | "stock" | "waitingBorrowCount"

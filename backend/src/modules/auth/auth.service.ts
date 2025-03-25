@@ -54,24 +54,22 @@ export class AuthService {
     private readonly mailerService: MailerService,
   ) {}
 
-  async login({ id, role, membershipLevel }: User): Promise<any> {
+  async login({
+    id,
+    role,
+    membershipLevel,
+  }: User): Promise<{ token: string; exprires_in: string }> {
     const formattedDate = dateFormatter(4);
 
     const accessToken = this.generateAccessToken({ membershipLevel, role, userId: id });
     const accessTokenExpireTime = this.jwtService.decode(accessToken);
 
-    const refreshToken = this.generateRefreshToken({ userId: id, deviceId: uuidv4() });
-    const storeRefreshToken = await this.storeRefreshToken(refreshToken);
+    // const refreshToken = this.generateRefreshToken({ userId: id, deviceId: uuidv4() });
+    // const storeRefreshToken = await this.storeRefreshToken(refreshToken);
 
     return {
-      access_token: {
-        token: accessToken,
-        exprires_in: formattedDate.format(new Date(accessTokenExpireTime.exp * 1000)),
-      },
-      refresh_token: {
-        token: refreshToken,
-        exprires_in: formattedDate.format(storeRefreshToken.exprires_in),
-      },
+      token: accessToken,
+      exprires_in: formattedDate.format(new Date(accessTokenExpireTime.exp * 1000)),
     };
   }
 

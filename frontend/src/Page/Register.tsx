@@ -5,13 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { RegisterType } from "../types/auth.type";
 import { toast } from "react-toastify";
 import { fetchRegisterUser } from "../Data/Api";
+import ErrorFormMessage from "../Component/ErrorFormMessage";
 
 type Props = {
     endPoint?: string;
     redirectPage?: string;
+    closeFunction?: () => void;
 };
 
-export default function Register({ endPoint, redirectPage }: Props) {
+export default function Register({ endPoint, redirectPage, closeFunction }: Props) {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
@@ -29,16 +31,74 @@ export default function Register({ endPoint, redirectPage }: Props) {
             toast.error("Unsuccessfully!");
             return;
         }
-        fetchRegisterUser(endPoint, user)
-            .then((result) => {
+
+        toast.promise(
+            fetchRegisterUser(endPoint, user).then((result) => {
                 console.log({ result });
                 if (redirectPage) navigate(redirectPage);
-            })
-            .catch((e) => console.log(e));
+                setTimeout(() => window.location.reload(), 500);
+            }),
+            {
+                pending: {
+                    render: "Đang thêm mới...",
+                    autoClose: 500
+                },
+                success: {
+                    render: "Tạo mới thành công👌",
+                    autoClose: 1000,
+                    delay: 500
+                },
+                error: {
+                    render({ data }) {
+                        if (
+                            !data ||
+                            typeof data !== "object" ||
+                            !("response" in data) ||
+                            typeof data.response !== "object" ||
+                            data.response === null ||
+                            !("data" in data.response) ||
+                            typeof data.response.data !== "object" ||
+                            data.response.data === null ||
+                            !("message" in data.response.data) ||
+                            (typeof data.response.data.message !== "string" &&
+                                !Array.isArray(data.response.data.message))
+                        ) {
+                            return "Tạo mới không thành công🤯";
+                        }
+
+                        return Array.isArray(data.response.data.message) ? (
+                            <div className="flex flex-col gap-1">
+                                {data.response.data.message.map((item) => {
+                                    return Object.entries(item).map(([k, v]) => {
+                                        return (
+                                            <p>
+                                                <span className="font-bold">{k}</span> {`: ${v}\n`}
+                                            </p>
+                                        );
+                                    });
+                                })}
+                            </div>
+                        ) : (
+                            <p>{data.response.data.message}</p>
+                        );
+                    },
+                    delay: 500
+                }
+            }
+        );
     };
 
     return (
         <div className="text-center wrapper-login mx-auto my-5 relative w-xl border-2 bg-white border-black rounded-2xl shadow-[0px_0px_20px_rgba(0,0,0,1)]">
+            {closeFunction && (
+                <button
+                    onClick={closeFunction}
+                    className="absolute right-[50px] top-[20px] text-black font-bold px-3 py-1.5 rounded-md border border-black  hover:cursor-pointer hover:text-white hover:bg-black  transform:hover  duration-300 ease"
+                >
+                    <span>X</span>
+                </button>
+            )}
+
             <h2 className="font-medium text-[35px] pt-10">Register</h2>
 
             <form noValidate action="#" className="pb-12 px-12" onSubmit={handleSubmit(onSubmit)}>
@@ -51,9 +111,15 @@ export default function Register({ endPoint, redirectPage }: Props) {
                         id="name"
                         required
                         className=" w-full h-full outline-none pr-11 pl-2 font-medium"
-                        {...register("name", { required: "You must enter your name" })}
+                        {...register("name", {
+                            required: "You must enter your name",
+                            pattern: {
+                                value: /^[a-zA-ZÀ-ỹ\s]+$/,
+                                message: "Tên chỉ chứa kí tự chữ và khoảng trắng"
+                            }
+                        })}
                     />
-                    {errors.name && <p className="text-red-500 m-2 font-medium text-right">{errors.name.message}</p>}
+                    {errors.name && <ErrorFormMessage message={errors.name.message} />}
                     <label htmlFor="name" className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] ">
                         Full Name
                     </label>
@@ -69,12 +135,15 @@ export default function Register({ endPoint, redirectPage }: Props) {
                         required
                         className=" w-full h-full outline-none pr-11 pl-2 font-medium"
                         {...register("username", {
-                            required: "You must enter your username"
+                            required: "You must enter your username",
+                            pattern: {
+                                value: /^[a-zA-Z0-9]{1,50}$/,
+                                message: "Username phải từ 1-50 ký tự và không có ký tự đặc biệt"
+                            }
                         })}
                     />
-                    {errors.username && (
-                        <p className="text-red-500 m-2 font-medium text-right">{errors.username.message}</p>
-                    )}
+                    {errors.username && <ErrorFormMessage message={errors.username.message} />}
+
                     <label htmlFor="username" className="absolute left-2 font-medium -translate-y-1/2 top-[-2px] ">
                         User name
                     </label>
@@ -94,12 +163,15 @@ export default function Register({ endPoint, redirectPage }: Props) {
                         required
                         className=" w-full h-full outline-none pr-11 pl-2 font-medium"
                         {...register("password", {
-                            required: "You must enter your password"
+                            required: "You must enter your password",
+                            minLength: {
+                                value: 8,
+                                message: "Mật khẩu phải có ít nhất 8 kí tự"
+                            }
                         })}
                     />
-                    {errors.password && (
-                        <p className="text-red-500 m-2 font-medium text-right">{errors.password.message}</p>
-                    )}
+                    {errors.password && <ErrorFormMessage message={errors.password.message} />}
+
                     <label htmlFor="password" className="absolute left-2 font-medium -translate-y-1/2 top-[-2px] ">
                         Password
                     </label>
@@ -141,10 +213,14 @@ export default function Register({ endPoint, redirectPage }: Props) {
                         required
                         className=" w-full h-full outline-none pr-11 pl-2 font-medium"
                         {...register("email", {
-                            required: "You must enter your email"
+                            required: "You must enter your email",
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: "không đúng định dạng email!"
+                            }
                         })}
                     />
-                    {errors.email && <p className="text-red-500 m-2 font-medium text-right">{errors.email.message}</p>}
+                    {errors.email && <ErrorFormMessage message={errors.email.message} />}
                     <label htmlFor="email" className="absolute left-2 font-medium -translate-y-1/2 top-[-2px] ">
                         Email
                     </label>
@@ -160,12 +236,23 @@ export default function Register({ endPoint, redirectPage }: Props) {
                         required
                         className="peer w-full h-full outline-none pr-11 pl-2 font-medium"
                         {...register("phoneNumber", {
-                            required: "You must enter your phone"
+                            required: "You must enter your phone",
+                            pattern: {
+                                value: /^(0|\+84)(\s|\.)?((3[2-9])|(5[689])|(7[06-9])|(8[1-689])|(9[0-46-9]))(\d)(\s|\.)?(\d{3})(\s|\.)?(\d{3})$/,
+                                message: "Số điện thoại phải đúng định dạng!"
+                            },
+                            maxLength: {
+                                value: 10,
+                                message: "Số điện thoại không được vượt quá 10 kí tự"
+                            },
+                            minLength: {
+                                value: 10,
+                                message: "Số điện thoại không được ít hơn 10 kí tự"
+                            }
                         })}
                     />
-                    {errors.phoneNumber && (
-                        <p className="text-red-500 m-2 font-medium text-right">{errors.phoneNumber.message}</p>
-                    )}
+                    {errors.phoneNumber && <ErrorFormMessage message={errors.phoneNumber.message} />}
+
                     <label htmlFor="phone" className="absolute left-2 font-medium -translate-y-1/2 top-[-2px] ">
                         Phone Number
                     </label>
@@ -178,12 +265,13 @@ export default function Register({ endPoint, redirectPage }: Props) {
                         required
                         className="peer w-full h-full outline-none pr-2 pl-2 font-medium"
                         {...register("birthDate", {
-                            required: "You must enter your phone"
+                            setValueAs(value) {
+                                if (!value || value === "") return undefined;
+                                return String(value);
+                            }
                         })}
                     />
-                    {errors.birthDate && (
-                        <p className="text-red-500 m-2 font-medium text-right">{errors.birthDate.message}</p>
-                    )}
+                    {errors.birthDate && <ErrorFormMessage message={errors.birthDate.message} />}
                     <label htmlFor="phone" className="absolute left-2 font-medium -translate-y-1/2 top-[-2px] ">
                         Birth Date
                     </label>

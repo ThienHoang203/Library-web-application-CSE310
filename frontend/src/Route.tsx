@@ -10,7 +10,6 @@ import User from "./Page/User";
 import App from "./Component/App";
 import UserManagement from "./Page/UserManagement";
 import BookManagement from "./Page/BookManagement";
-import CreateAdminPage from "./Page/CreateAdminPage";
 import Admin from "./Page/Admin";
 import Register from "./Page/Register";
 const router = createBrowserRouter([
@@ -66,10 +65,6 @@ const router = createBrowserRouter([
                     {
                         path: "book",
                         element: <BookManagement />
-                    },
-                    {
-                        path: "add-new-admin",
-                        element: <CreateAdminPage />
                     }
                 ]
             }

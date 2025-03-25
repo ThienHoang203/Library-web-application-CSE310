@@ -25,8 +25,8 @@ export default class SearchBookDto extends PickType(CreateBookDto, [
   @IsOptional()
   author: string;
 
-  @IsEnum(BookFormat, {
-    message: `format phải là ${Object.values(BookFormat).join(' hoặc ')}.`,
+  @IsEnum(BookGerne, {
+    message: `format phải là ${Object.values(BookGerne).join(' hoặc ')}.`,
   })
   @IsOptional()
   genre: BookGerne;

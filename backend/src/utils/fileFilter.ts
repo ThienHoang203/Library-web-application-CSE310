@@ -19,7 +19,7 @@ export function fileFilter(
   if (file.fieldname === 'coverImageFile' && !coverImgMimeType.includes(file.mimetype)) {
     return callback(
       new BadRequestException({
-        coverImageFile: `Phải có định dạng là ${coverImageExtType.join(' hoặc ')}`,
+        message: `coverImageFile hải có định dạng là ${coverImageExtType.join(' hoặc ')}`,
         statusCode: HttpStatus.BAD_REQUEST,
       }),
       false,
@@ -27,7 +27,7 @@ export function fileFilter(
   } else if (file.fieldname === 'ebookFile' && !ebookMimeType.includes(file.mimetype)) {
     return callback(
       new BadRequestException({
-        ebookFile: `Phải có định dạng là ${ebookExtType.join(' hoặc ')}`,
+        message: `ebookFile phải có định dạng là ${ebookExtType.join(' hoặc ')}`,
         statusCode: HttpStatus.BAD_REQUEST,
       }),
       false,
