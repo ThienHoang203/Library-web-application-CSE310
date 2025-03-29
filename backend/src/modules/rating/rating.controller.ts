@@ -9,6 +9,7 @@ import {
   Req,
   BadRequestException,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
@@ -18,6 +19,7 @@ import { checkAndGetIntValue } from 'src/utils/checkType';
 import { ResponseMessage } from 'src/decorator/response-message.decorator';
 import { Request } from 'express';
 import { NewTokenPayloadType, TokenPayloadType } from '../auth/auth.service';
+import FillRatingDto from './dto/fill-rating.dto';
 
 @Controller('rating')
 export class RatingController {
@@ -28,17 +30,10 @@ export class RatingController {
   //-------------------------------NORMAL USER ROLE-------------------------
 
   //get all comments about the book
-  @Get(':bookId')
+  @Get()
   @Public()
-  findAllByBookId(@Param('bookId') bookId: string) {
-    const parsedIntId = checkAndGetIntValue(
-      bookId,
-      'bookId phải là số nguyên!',
-      0,
-      'bookId không được nhỏ hơn 0',
-    );
-
-    return this.ratingService.findAllByBookID(parsedIntId);
+  fillRating(@Query() fillter: FillRatingDto) {
+    return this.ratingService.fillRating(fillter);
   }
 
   @Post()

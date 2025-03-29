@@ -1,6 +1,4 @@
 import Category from "../Component/MainCategory";
-import MainHeader from "../Component/MainHeader";
-import Footer from "../Component/Footer";
 import { useEffect, useState } from "react";
 import { getUser } from "../Data/Api";
 import { toast } from "react-toastify";
@@ -20,7 +18,6 @@ export default function Home() {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        console.log(searchData);
         navigate("/search", { state: searchData });
     };
 
@@ -29,20 +26,17 @@ export default function Home() {
     useEffect(() => {
         if (token)
             getUser("/user/profile", token).then((result) => {
-                console.log({ result });
-                console.log("Navigating with params:", searchData);
                 if (!result) {
                     toast.error("dang nhap khong thanh cong");
                     return;
                 }
-                toast.success("dang nhap  thanh cong");
+
                 localStorage.setItem("user", JSON.stringify(result.data));
             });
-    }, [token]);
+    }, []);
 
     return (
         <>
-            <MainHeader />
             <div className="max-w-screen-xl px-4 mx-auto flex">
                 <div className="w-full m-5">
                     <img src="/img/book.jpg" alt="image" className="w-[1100px] h-[500px] mx-auto" />
@@ -75,7 +69,6 @@ export default function Home() {
             </div>
             <Category />
             <Category />
-            <Footer />
         </>
     );
 }

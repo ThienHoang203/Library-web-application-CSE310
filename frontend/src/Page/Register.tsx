@@ -36,7 +36,7 @@ export default function Register({ endPoint, redirectPage, closeFunction }: Prop
             fetchRegisterUser(endPoint, user).then((result) => {
                 console.log({ result });
                 if (redirectPage) navigate(redirectPage);
-                setTimeout(() => window.location.reload(), 500);
+                setTimeout(() => window.location.reload(), 1500);
             }),
             {
                 pending: {
@@ -192,7 +192,7 @@ export default function Register({ endPoint, redirectPage, closeFunction }: Prop
                         )}
                     </span>
                     <input
-                        id="password"
+                        id="confirm-password"
                         type={showConfirmPassword ? "text" : "password"}
                         required
                         className=" w-full h-full outline-none pr-11 pl-2 font-medium"

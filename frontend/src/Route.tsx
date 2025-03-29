@@ -2,55 +2,60 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Page/Home";
 import Login from "./Page/Login";
 import Error from "./Page/Error";
-import OutletLogin from "./Component/OutletLogin";
 import SideMenu from "./Component/SideMenu";
 import SearchResult from "./Component/SearchResult";
 import Single from "./Page/Single";
 import User from "./Page/User";
-import App from "./Component/App";
+import App from "./Page/App";
 import UserManagement from "./Page/UserManagement";
 import BookManagement from "./Page/BookManagement";
 import Admin from "./Page/Admin";
 import Register from "./Page/Register";
+import UserPage from "./Page/UserPage";
+import PDFViewer from "./Component/PDFViewer";
 const router = createBrowserRouter([
     {
-        path: "/",
+        path: "",
         element: <App />,
         children: [
             {
                 path: "/",
-                element: <Home />
-            },
-            {
-                path: "/loginPage",
-                element: <OutletLogin />,
+                element: <UserPage />,
                 children: [
                     {
-                        index: true,
+                        path: "/",
+                        element: <Home />
+                    },
+                    {
+                        path: "loginPage",
                         element: <Login />
                     },
                     {
                         path: "register",
-                        element: <Register redirectPage="/" />
+                        element: <Register redirectPage="/" endPoint="auth/signup" />
                     },
 
                     {
                         path: "user",
                         element: <User />
-                    }
-                ]
-            },
-            {
-                path: "/search",
-                element: <SideMenu />,
-                children: [
-                    {
-                        index: true,
-                        element: <SearchResult />
                     },
                     {
-                        path: "single",
-                        element: <Single />
+                        path: "search",
+                        element: <SideMenu />,
+                        children: [
+                            {
+                                index: true,
+                                element: <SearchResult />
+                            },
+                            {
+                                path: ":bookId",
+                                element: <Single />
+                            }
+                        ]
+                    },
+                    {
+                        path: "view/:fileName",
+                        element: <PDFViewer />
                     }
                 ]
             },
@@ -59,18 +64,17 @@ const router = createBrowserRouter([
                 element: <Admin />,
                 children: [
                     {
-                        path: "user",
+                        path: "users",
                         element: <UserManagement />
                     },
                     {
-                        path: "book",
+                        path: "books",
                         element: <BookManagement />
                     }
                 ]
             }
         ]
     },
-
     {
         path: "*",
         element: <Error />

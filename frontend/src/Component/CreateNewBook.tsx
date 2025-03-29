@@ -159,8 +159,13 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                 </div>
 
                 <div>
-                    <select id="format" required {...register("format", { required: "Vui lòng chọn định dạng sách!" })}>
-                        <option disabled selected value="">
+                    <select
+                        defaultValue={""}
+                        id="format"
+                        required
+                        {...register("format", { required: "Vui lòng chọn định dạng sách!" })}
+                    >
+                        <option disabled value="">
                             Chọn định dạng
                         </option>
 
@@ -186,8 +191,9 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                                 return String(value);
                             }
                         })}
+                        defaultValue={""}
                     >
-                        <option disabled selected value="">
+                        <option disabled value="">
                             Chọn thể loại
                         </option>
 

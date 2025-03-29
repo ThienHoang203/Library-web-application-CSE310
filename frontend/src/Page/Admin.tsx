@@ -1,13 +1,15 @@
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import Register from "./Register";
 import CreateNewBook from "../Component/CreateNewBook";
+import { UserContext } from "../global-states/UserContext";
 
 export default function Admin() {
     const navigate = useNavigate();
     const [showForm, setShowForm] = useState(false);
     const [showBookForm, setShowBookForm] = useState(false);
-    const user = JSON.parse(localStorage.getItem("user") ?? "");
+    const { user } = useContext(UserContext);
+
     const setShowFormFalse = useCallback(() => {
         setShowForm(false);
     }, []);
@@ -35,13 +37,13 @@ export default function Admin() {
                     </p>
                     <p
                         className="text-center p-2 mt-3 hover:bg-blue-400 rounded text-[18px] font-medium text-[rgba(255,255,255,0.8)]"
-                        onClick={() => navigate("/admin/user")}
+                        onClick={() => navigate("/admin/users")}
                     >
                         User
                     </p>
                     <p
                         className="text-center p-2 mt-3 hover:bg-blue-400 rounded text-[18px] font-medium text-[rgba(255,255,255,0.8)]"
-                        onClick={() => navigate("/admin/book")}
+                        onClick={() => navigate("/admin/books")}
                     >
                         Book
                     </p>

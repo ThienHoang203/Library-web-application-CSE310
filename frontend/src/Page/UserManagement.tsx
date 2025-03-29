@@ -1,17 +1,31 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { User, USER_HEADERS } from "../types/user.type";
 import { fetchGetUsers } from "../Data/Api";
+import { UserContext } from "../global-states/UserContext";
+import { toast } from "react-toastify";
+import { AxiosError } from "axios";
 
 export default function UserManagement() {
     const [users, setUsers] = useState<User[]>([]);
     const [userHeaders] = useState(Object.values(USER_HEADERS));
     const [displayedUserProperties] = useState(Object.keys(USER_HEADERS));
-    const token = localStorage.getItem("token") ?? "";
+    const { accessToken } = useContext(UserContext);
+    console.log({ accessToken });
+
     useEffect(() => {
-        fetchGetUsers("/user", token).then((d) => {
-            if (d !== null) setUsers(d);
-        });
-    }, []);
+        fetchGetUsers("/user", accessToken?.token ?? "")
+            .then((d) => {
+                if (d !== null) setUsers(d);
+            })
+            .catch((e) => {
+                if (e instanceof AxiosError) {
+                    if (e.response && e.response.data && typeof e.response.data.message === "string") {
+                        toast.error(String(e.response.data.message));
+                    }
+                    console.error(e);
+                }
+            });
+    }, [accessToken?.token]);
 
     return (
         <table className="w-full border-collapse">

@@ -1,14 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import { LoginNormal } from "../Data/Api";
+import { getUser, LoginNormal } from "../Data/Api";
 import { LoginType } from "../types/auth.type";
 import { toast } from "react-toastify";
+import { UserContext } from "../global-states/UserContext";
 
 export default function Login() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
-
+    const { dispatch } = useContext(UserContext);
     const {
         register,
         handleSubmit,
@@ -17,71 +18,56 @@ export default function Login() {
         mode: "onBlur"
     });
 
-    // const onSubmit = as (user: LoginType) => {
-    //     LoginNormal("/auth/login", user).then((data) =>
-    //         setTimeout(() => {
-    //             if (data) {
-    //                 localStorage.setItem("token", data.token);
-    //                 setTimeout(() => navigate("/", { replace: false }), 1000);
-    //             }
-    //         }, 1000)
-    //     ),
-    //         {
-    //             pending: {
-    //                 render: "Vui lòng chờ xác thực.",
-    //                 autoClose: 1000 // Tự động đóng thông báo pending sau 1 giây
-    //             },
-    //             success: {
-    //                 render: "Đăng nhập thành công ở",
-    //                 autoClose: 1000
-    //             },
-    //             error: {
-    //                 render: "Đăng nhập thất bại ở",
-    //                 autoClose: 1000
-    //             }
-    //         };
-    // };
+    async function logIn(loginData: LoginType) {
+        const accessToken = await LoginNormal("/auth/login", loginData);
+        if (!accessToken) {
+            console.error("Đăng nhập thất bại");
+            return;
+        }
+        dispatch({ type: "login", token: accessToken.token });
+        localStorage.setItem("token", accessToken.token);
+        const response = await getUser("user/profile", accessToken.token);
 
-    async function onSubmit(user: LoginType) {
-        toast.promise(
-            LoginNormal("/auth/login", user).then((data) => {
-                if (data) {
-                    localStorage.setItem("token", data.token);
-                    setTimeout(() => navigate("/", { replace: true }), 1000);
-                    setTimeout(() => window.location.reload(), 1500);
-                }
-            }),
-            {
-                pending: {
-                    render: "Vui lòng chờ xác thực",
-                    autoClose: 500
+        if (response.data) {
+            dispatch({ type: "authenticated", user: response.data });
+            localStorage.setItem("user", JSON.stringify(response.data));
+            setTimeout(() => {
+                navigate("/", { replace: true });
+            }, 500);
+        }
+    }
+
+    function onSubmit(user: LoginType) {
+        toast.promise(logIn(user), {
+            pending: {
+                render: "Vui lòng chờ xác thực",
+                autoClose: 500
+            },
+            success: {
+                render: "Xác thực thành công 👌",
+                autoClose: 500,
+                delay: 500
+            },
+            error: {
+                render({ data }) {
+                    if (
+                        !data ||
+                        typeof data !== "object" ||
+                        !("response" in data) ||
+                        typeof data.response !== "object" ||
+                        data.response === null ||
+                        !("data" in data.response) ||
+                        typeof data.response.data !== "object" ||
+                        data.response.data === null ||
+                        !("message" in data.response.data) ||
+                        typeof data.response.data.message !== "string"
+                    )
+                        return "Đăng nhập không thành công🤯";
+                    return data.response.data.message;
                 },
-                success: {
-                    render: "Promise resolved 👌",
-                    autoClose: 1000,
-                    delay: 500
-                },
-                error: {
-                    render({ data }) {
-                        if (
-                            !data ||
-                            typeof data !== "object" ||
-                            !("response" in data) ||
-                            typeof data.response !== "object" ||
-                            data.response === null ||
-                            !("data" in data.response) ||
-                            typeof data.response.data !== "object" ||
-                            data.response.data === null ||
-                            !("message" in data.response.data) ||
-                            typeof data.response.data.message !== "string"
-                        )
-                            return "Đăng nhập không thành công🤯";
-                        return data.response.data.message;
-                    },
-                    delay: 500
-                }
+                delay: 500
             }
-        );
+        });
     }
 
     return (
@@ -147,7 +133,7 @@ export default function Login() {
                 <div className="font-medium mt-6  ">
                     <p>
                         You don't have an account?
-                        <Link to="register">
+                        <Link to="/register">
                             <span className="font-bold ml-2">Register</span>
                         </Link>
                     </p>
