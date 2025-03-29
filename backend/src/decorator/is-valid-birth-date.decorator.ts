@@ -13,15 +13,22 @@ export function IsValidBirthDate(validationOptions?: ValidationOptions) {
 
           const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
           if (!match) return false;
-          const [, year, month, day] = match.map(Number);
+          const [_, year, month, day] = match.map(Number);
           console.log({ match: match.map(Number) });
+          console.log('Hello');
+
+          const today = new Date().toISOString().split('T')[0].split('-');
+          console.log(today);
+          if (year > Number(today[0])) return false;
+
+          if (month > Number(today[1])) return false;
+
+          if (month === Number(today[2]) && day > Number(today[2])) return false;
 
           if (month < 1 || month > 12) return false;
 
           const lastDay = new Date(year, month, 0).getDate();
           if (day < 1 || day > lastDay) return false;
-
-          if (year > new Date().getFullYear()) return false;
 
           return true;
         },
@@ -40,7 +47,14 @@ export function IsValidBirthDate(validationOptions?: ValidationOptions) {
 
           if (month < 1 || month > 12) errors.push('Tháng không hợp lệ');
 
-          if (year > new Date().getFullYear()) errors.push('Năm vượt quá hiện tại');
+          const today = new Date().toISOString().split('T')[0].split('-');
+          console.log(today);
+          if (year > Number(today[0])) errors.push('Năm vượt quá hiện tại');
+
+          if (month > Number(today[1])) errors.push('tháng vượt quá hiện tại');
+
+          if (month === Number(today[2]) && day > Number(today[2]))
+            errors.push('ngày vượt quá hiện tại');
 
           if (month >= 1 && month <= 12) {
             const lastDay = new Date(year, month, 0).getDate();

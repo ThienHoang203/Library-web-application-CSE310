@@ -1,10 +1,9 @@
 import axios, { HttpStatusCode } from "axios";
-import { AppContext } from "../Component/App";
-import { useContext } from "react";
 import { Book, CreateBookType } from "../types/book.type";
 import { LoginType, RegisterType } from "../types/auth.type";
 import { User } from "../types/user.type";
 import { toast } from "react-toastify";
+import { RatingType } from "../types/rating.type";
 
 const API_BASE_URL = "http://localhost:5050/api";
 
@@ -15,14 +14,25 @@ const api = axios.create({
     }
 });
 
+export async function viewBook(fileName: string, token: string) {
+    return api.get(`book/view/${fileName}`, { headers: { Authorization: `Bearer ${token}` } });
+}
+
+export async function getAllRatingOfBook(bookId: number | string): Promise<RatingType[]> {
+    const response = await api.get("rating", { params: { bookId: bookId } });
+    return response.data.data.ratings;
+}
+
+export async function fetchGetABook(bookId: string): Promise<Book> {
+    const response = await api.get(`book/${bookId}`);
+    return response.data.data;
+}
+
 export async function fetchGetBooks(endpoint: string): Promise<Book[] | null> {
     const response = await api.get(endpoint);
-
     if (response.status !== HttpStatusCode.Ok || typeof response.data === "undefined") {
-        console.log({ response });
         return null;
     }
-
     return response.data.data.books;
 }
 
@@ -30,14 +40,11 @@ export const searchBooks = async (endpoint: string, params: Record<string, strin
     const filteredParams = Object.fromEntries(
         Object.entries(params).filter(([, value]) => value !== undefined && value !== "")
     );
-    console.log({ params, endpoint });
     const response = await api.get(endpoint, {
         params: filteredParams
     });
 
     if (response.status !== HttpStatusCode.Ok || !response.data) return null;
-    console.log(response);
-
     return response.data.data.books;
 };
 
@@ -61,43 +68,24 @@ export async function fetchCreateBook(endPoint: string, data: CreateBookType, to
     if (data.coverImageFile && data.coverImageFile[0]) {
         formData.append("coverImageFile", data.coverImageFile[0]);
     }
-
-    console.log(formData);
-
     const response = await api.post(endPoint, formData, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
     });
-    console.log({ response: response.data });
-
     if (response.status !== HttpStatusCode.Created || typeof response.data === "undefined") {
-        console.log({ response });
         return null;
     }
 
     return response.data.data;
 }
 
-export async function fetchGetUsers(endpoint: string, token: string): Promise<User[] | null> {
-    try {
-        const response = await api.get(endpoint, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        console.log(response.data);
+export async function fetchGetUsers(endpoint: string, token: string): Promise<User[]> {
+    console.log({ endpoint, token });
 
-        return response.data.data.users;
-    } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-            console.error("Lỗi API:", error.response?.status, error.response?.data?.message);
-            console.log({
-                statusCode: error.response?.status || 500,
-                status: "error",
-                message: error.response?.data?.message || "Lỗi không xác định"
-            });
-            return null;
-        }
+    const response = await api.get(endpoint, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
 
-        return null;
-    }
+    return response.data.data.users;
 }
 
 export const getUser = async (endpoint: string, token: string) => {
@@ -117,20 +105,6 @@ export const getUser = async (endpoint: string, token: string) => {
         }
         return { statusCode: 500, status: "error", message: "Lỗi không xác định" };
     }
-};
-
-export const useAxiosInterceptor = () => {
-    const { token } = useContext(AppContext);
-
-    api.interceptors.request.use(
-        (config) => {
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
-            }
-            return config;
-        },
-        (error) => Promise.reject(error)
-    );
 };
 
 export const getAll = async (endpoint: string) => {

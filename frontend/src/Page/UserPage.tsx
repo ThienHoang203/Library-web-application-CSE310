@@ -1,13 +1,12 @@
+import { Outlet } from "react-router-dom";
 import Footer from "../Component/Footer";
 import Header from "../Component/Header";
 
-export default function Error() {
+export default function UserPage() {
     return (
         <>
             <Header />
-            <div>
-                <p>Error</p>
-            </div>
+            <Outlet />
             <Footer />
         </>
     );

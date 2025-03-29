@@ -175,6 +175,7 @@ export class BookController {
   // view a file
   @Get('view/:filename')
   @Roles()
+  @Public()
   async downloadEbookFile(@Param('filename') filename: string, @Res() res: Response) {
     let folder = '';
 
