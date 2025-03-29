@@ -1,7 +1,6 @@
 import Category from "../Component/MainCategory";
-import { useEffect, useState } from "react";
-import { getUser } from "../Data/Api";
-import { toast } from "react-toastify";
+import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 
 export default function Home() {
@@ -20,20 +19,6 @@ export default function Home() {
         event.preventDefault();
         navigate("/search", { state: searchData });
     };
-
-    const token = localStorage.getItem("token");
-
-    useEffect(() => {
-        if (token)
-            getUser("/user/profile", token).then((result) => {
-                if (!result) {
-                    toast.error("dang nhap khong thanh cong");
-                    return;
-                }
-
-                localStorage.setItem("user", JSON.stringify(result.data));
-            });
-    }, []);
 
     return (
         <>

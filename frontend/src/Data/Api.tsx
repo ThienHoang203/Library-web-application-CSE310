@@ -1,6 +1,6 @@
-import axios, { HttpStatusCode } from "axios";
+import axios, { AxiosError, HttpStatusCode } from "axios";
 import { Book, CreateBookType } from "../types/book.type";
-import { LoginType, RegisterType } from "../types/auth.type";
+import { LoginType, RegisterType, TokenPayloadType } from "../types/auth.type";
 import { User } from "../types/user.type";
 import { toast } from "react-toastify";
 import { RatingType } from "../types/rating.type";
@@ -78,9 +78,19 @@ export async function fetchCreateBook(endPoint: string, data: CreateBookType, to
     return response.data.data;
 }
 
-export async function fetchGetUsers(endpoint: string, token: string): Promise<User[]> {
-    console.log({ endpoint, token });
+export async function getUserProfile(token: string): Promise<User> {
+    const repsonse = await api.get("user/profile/", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
 
+    if (repsonse.status !== HttpStatusCode.Ok) throw new AxiosError("Token không hợp lệ!");
+
+    return repsonse.data.data;
+}
+
+export async function fetchGetUsers(endpoint: string, token: string): Promise<User[]> {
     const response = await api.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
     });
@@ -145,6 +155,12 @@ export const createUser = async (endpoint: string) => {
         return { statusCode: 500, status: "error", message: "Lỗi không xác định" };
     }
 };
+
+export async function getTokenPayload(token: string): Promise<TokenPayloadType> {
+    const reponse = await api.get("auth/token-payload", { headers: { Authorization: `Bearer ${token}` } });
+    if (reponse.status !== HttpStatusCode.Ok) throw new AxiosError("Token không hợp lệ, vui lòng đăng nhập lại");
+    return reponse.data.data;
+}
 
 export const LoginNormal = async (
     endpoint: string,

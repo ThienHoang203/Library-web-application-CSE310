@@ -10,7 +10,6 @@ export default function UserManagement() {
     const [userHeaders] = useState(Object.values(USER_HEADERS));
     const [displayedUserProperties] = useState(Object.keys(USER_HEADERS));
     const { accessToken } = useContext(UserContext);
-    console.log({ accessToken });
 
     useEffect(() => {
         fetchGetUsers("/user", accessToken?.token ?? "")
