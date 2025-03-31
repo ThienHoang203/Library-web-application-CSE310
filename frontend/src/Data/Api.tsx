@@ -1,8 +1,7 @@
-import axios, { HttpStatusCode } from "axios";
-import { Book, CreateBookType } from "../types/book.type";
-import { LoginType, RegisterType } from "../types/auth.type";
+import axios, { AxiosError, HttpStatusCode } from "axios";
+import { Book, CreateBookType, UpdateBookType } from "../types/book.type";
+import { LoginType, RegisterType, TokenPayloadType } from "../types/auth.type";
 import { User } from "../types/user.type";
-import { toast } from "react-toastify";
 import { RatingType } from "../types/rating.type";
 
 const API_BASE_URL = "http://localhost:5050/api";
@@ -15,7 +14,7 @@ const api = axios.create({
 });
 
 export async function viewBook(fileName: string, token: string) {
-    return api.get(`book/view/${fileName}`, { headers: { Authorization: `Bearer ${token}` } });
+    return api.get(`book/view/${fileName}`, { responseType: "blob", headers: { Authorization: `Bearer ${token}` } });
 }
 
 export async function getAllRatingOfBook(bookId: number | string): Promise<RatingType[]> {
@@ -23,7 +22,7 @@ export async function getAllRatingOfBook(bookId: number | string): Promise<Ratin
     return response.data.data.ratings;
 }
 
-export async function fetchGetABook(bookId: string): Promise<Book> {
+export async function fetchGetABook(bookId: string | number): Promise<Book> {
     const response = await api.get(`book/${bookId}`);
     return response.data.data;
 }
@@ -35,7 +34,35 @@ export async function fetchGetBooks(endpoint: string): Promise<Book[] | null> {
     }
     return response.data.data.books;
 }
+export async function fetchUpdateBook(data: UpdateBookType, token: string, id: string | number): Promise<void> {
+    const formData = new FormData();
 
+    if (data.author) formData.append("author", data.author);
+    if (data.title) formData.append("title", data.title);
+    if (data.genre) formData.append("genre", data.genre);
+    if (data.description) formData.append("description", data.description);
+    if (data.stock) formData.append("stock", data.stock.toString());
+    if (data.publishedDate) formData.append("publishedDate", String(data.publishedDate));
+    if (data.version) formData.append("version", data.version.toString());
+
+    if (data.ebookFile && data.ebookFile[0]) {
+        formData.append("ebookFile", data.ebookFile[0]);
+    }
+
+    if (data.coverImageFile && data.coverImageFile[0]) {
+        formData.append("coverImageFile", data.coverImageFile[0]);
+    }
+    console.log({ data });
+    try {
+        const response = await api.patch(`book/${id}`, formData, {
+            headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
+        });
+
+        return response.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
 export const searchBooks = async (endpoint: string, params: Record<string, string>): Promise<Book[] | null> => {
     const filteredParams = Object.fromEntries(
         Object.entries(params).filter(([, value]) => value !== undefined && value !== "")
@@ -78,9 +105,28 @@ export async function fetchCreateBook(endPoint: string, data: CreateBookType, to
     return response.data.data;
 }
 
-export async function fetchGetUsers(endpoint: string, token: string): Promise<User[]> {
-    console.log({ endpoint, token });
+export async function fetchDeleteBook(bookId: string | number, token: string): Promise<boolean> {
+    const response = await api.delete(`book/${bookId}`, { headers: { Authorization: `Bearer ${token}` } });
 
+    if (response.status !== HttpStatusCode.Ok) {
+        return false;
+    }
+    return true;
+}
+
+export async function getUserProfile(token: string): Promise<User> {
+    const repsonse = await api.get("user/profile/", {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+
+    if (repsonse.status !== HttpStatusCode.Ok) throw new AxiosError("Token không hợp lệ!");
+
+    return repsonse.data.data;
+}
+
+export async function fetchGetUsers(endpoint: string, token: string): Promise<User[]> {
     const response = await api.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
     });
@@ -146,6 +192,12 @@ export const createUser = async (endpoint: string) => {
     }
 };
 
+export async function getTokenPayload(token: string): Promise<TokenPayloadType> {
+    const reponse = await api.get("auth/token-payload", { headers: { Authorization: `Bearer ${token}` } });
+    if (reponse.status !== HttpStatusCode.Ok) throw new AxiosError("Token không hợp lệ, vui lòng đăng nhập lại");
+    return reponse.data.data;
+}
+
 export const LoginNormal = async (
     endpoint: string,
     data: LoginType
@@ -159,8 +211,7 @@ export const LoginNormal = async (
 
 export async function fetchRegisterUser(endpoint: string, data: RegisterType) {
     const response = await api.post(endpoint, data);
-    console.log(response);
-    toast.success("Đăng kí thành công!");
+    if (response.status !== HttpStatusCode.Created) throw new AxiosError("Đăng kí thất bại!");
     return response.data;
 }
 

@@ -1,8 +1,8 @@
 import { PickType } from '@nestjs/mapped-types';
 import { IsEnum, IsOptional } from 'class-validator';
-import { IsValidBirthDate } from 'src/decorator/is-valid-birth-date.decorator';
 import { BookFormat, BookGerne } from 'src/entities/book.entity';
 import CreateBookDto from './create-book.dto';
+import { IsValidDate } from 'src/decorator/is-valid-date.decorator';
 
 export default class SearchBookDto extends PickType(CreateBookDto, [
   'title',
@@ -31,7 +31,7 @@ export default class SearchBookDto extends PickType(CreateBookDto, [
   @IsOptional()
   genre: BookGerne;
 
-  @IsValidBirthDate()
+  @IsValidDate()
   @IsOptional()
   publishedDate: Date;
 

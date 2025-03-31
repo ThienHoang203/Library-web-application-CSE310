@@ -11,3 +11,11 @@ export type RegisterType = {
     phoneNumber: string;
     birthDate: Date;
 };
+
+export type TokenPayloadType = {
+    membershipLevel: string | null;
+    role: string;
+    userId: string;
+    iat: number;
+    exp: number;
+};

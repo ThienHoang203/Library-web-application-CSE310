@@ -35,8 +35,11 @@ export default function Register({ endPoint, redirectPage, closeFunction }: Prop
         toast.promise(
             fetchRegisterUser(endPoint, user).then((result) => {
                 console.log({ result });
-                if (redirectPage) navigate(redirectPage);
-                setTimeout(() => window.location.reload(), 1500);
+
+                setTimeout(() => {
+                    if (redirectPage) navigate(redirectPage);
+                    // window.location.reload();
+                }, 1000);
             }),
             {
                 pending: {
@@ -45,7 +48,7 @@ export default function Register({ endPoint, redirectPage, closeFunction }: Prop
                 },
                 success: {
                     render: "Tạo mới thành công👌",
-                    autoClose: 1000,
+                    autoClose: 500,
                     delay: 500
                 },
                 error: {

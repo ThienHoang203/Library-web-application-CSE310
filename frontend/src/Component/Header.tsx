@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User } from "../types/user.type";
 import { useCurrentRoute } from "../hooks/useCurrentRoute";
 import NavHeader from "./NavHeader";
 import { UserContext } from "../global-states/UserContext";
@@ -10,24 +9,12 @@ export default function Header() {
     const navigate = useNavigate();
     const { isLoginRoute } = useCurrentRoute();
 
-    const userContext = useContext(UserContext);
-    const [user, setUser] = useState<User | null>();
-
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else if (userContext.user) {
-            setUser(userContext.user);
-        } else {
-            setUser(null);
-        }
-    }, [userContext.user]);
+    const { user, dispatch } = useContext(UserContext);
 
     const handleLogout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
-        userContext.dispatch({ type: "logout" });
+        dispatch({ type: "logout" });
         navigate("/", { relative: "route" });
         toast.success("Đăng xuất thành công", { autoClose: 500 });
     };

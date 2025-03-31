@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import { getUser, LoginNormal } from "../Data/Api";
+import { getUserProfile, LoginNormal } from "../Data/Api";
 import { LoginType } from "../types/auth.type";
 import { toast } from "react-toastify";
 import { UserContext } from "../global-states/UserContext";
@@ -10,6 +10,7 @@ export default function Login() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const { dispatch } = useContext(UserContext);
+    // const {  } = useCurrentRoute();
     const {
         register,
         handleSubmit,
@@ -26,27 +27,22 @@ export default function Login() {
         }
         dispatch({ type: "login", token: accessToken.token });
         localStorage.setItem("token", accessToken.token);
-        const response = await getUser("user/profile", accessToken.token);
+        const user = await getUserProfile(accessToken.token);
 
-        if (response.data) {
-            dispatch({ type: "authenticated", user: response.data });
-            localStorage.setItem("user", JSON.stringify(response.data));
-            setTimeout(() => {
-                navigate("/", { replace: true });
-            }, 500);
-        }
+        dispatch({ type: "authenticated", user: user });
+        setTimeout(() => {
+            navigate("/", { replace: true });
+        }, 500);
     }
 
     function onSubmit(user: LoginType) {
         toast.promise(logIn(user), {
             pending: {
-                render: "Vui lòng chờ xác thực",
-                autoClose: 500
+                render: "Vui lòng chờ xác thực"
             },
             success: {
                 render: "Xác thực thành công 👌",
-                autoClose: 500,
-                delay: 500
+                autoClose: 500
             },
             error: {
                 render({ data }) {
@@ -64,8 +60,7 @@ export default function Login() {
                     )
                         return "Đăng nhập không thành công🤯";
                     return data.response.data.message;
-                },
-                delay: 500
+                }
             }
         });
     }

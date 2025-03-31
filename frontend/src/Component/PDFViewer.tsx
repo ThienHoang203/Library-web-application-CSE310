@@ -11,9 +11,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.m
 export default function PDFViewer() {
     const { path } = useCurrentRoute();
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-    const [numPages, setNumPages] = useState<number | null>(null);
-    const [pageNumber, setPageNumber] = useState(1);
     const { accessToken } = useContext(UserContext);
+    const [arrPageNum, setArrPageNum] = useState<number[]>([]);
     useEffect(() => {
         const arr = path.trim().split("/");
 
@@ -24,26 +23,22 @@ export default function PDFViewer() {
         console.log({ fileName: decodeURIComponent(fileName) });
 
         if (!fileName) return;
-        const fetchPDF = async () => {
+        async function fetchPDF() {
             try {
-                console.log("Hello");
-                console.log({ accessToken });
-
-                // Gọi API để lấy file PDF
                 const response = await viewBook(decodeURIComponent(fileName), accessToken?.token ?? "");
 
                 if (response.status !== HttpStatusCode.Ok) throw new Error("Failed to fetch PDF");
 
-                // Chuyển response thành Blob
                 const blob = new Blob([response.data], { type: "application/pdf" });
 
-                // Tạo URL từ Blob
                 const url = URL.createObjectURL(blob);
+                console.log({ url });
+
                 setPdfUrl(url);
             } catch (err) {
                 console.log(err);
             }
-        };
+        }
 
         fetchPDF();
 
@@ -54,26 +49,37 @@ export default function PDFViewer() {
     }, []);
 
     const onLoadSuccess = ({ numPages }: { numPages: number }) => {
-        setNumPages(numPages);
+        const temp = new Array<number>(numPages);
+        for (let index = 0; index < temp.length; ) {
+            temp[index] = ++index;
+        }
+        setArrPageNum(temp);
     };
 
     return (
-        <div>
+        <div className="">
             {pdfUrl ? (
-                <div className="pdf-container">
+                <div className="pdf-container mx-auto w-screen py-10 ">
                     <Document
                         file={pdfUrl}
                         onLoadSuccess={onLoadSuccess}
                         onLoadError={(error) => console.error("PDF load error:", error)}
+                        renderMode="canvas"
+                        className="flex flex-col items-center gap-5 justify-center"
                     >
-                        <Page
-                            pageNumber={pageNumber}
-                            width={800} // Điều chỉnh kích thước
-                            renderTextLayer={false} // Tắt text layer nếu không cần
-                        />
+                        {arrPageNum.map((val) => (
+                            <Page
+                                key={val}
+                                className={`page ${val} border border-amber-200`}
+                                pageNumber={val}
+                                renderTextLayer={false}
+                                renderAnnotationLayer={false}
+                                scale={1.2}
+                            />
+                        ))}
                     </Document>
 
-                    <div className="pagination">
+                    {/* <div className="pagination">
                         <button onClick={() => setPageNumber(Math.max(1, pageNumber - 1))} disabled={pageNumber <= 1}>
                             Previous
                         </button>
@@ -88,10 +94,10 @@ export default function PDFViewer() {
                         >
                             Next
                         </button>
-                    </div>
+                    </div> */}
                 </div>
             ) : (
-                <div>Loading PDF...</div>
+                <div className="mx-auto text-center">Loading PDF...</div>
             )}
         </div>
     );

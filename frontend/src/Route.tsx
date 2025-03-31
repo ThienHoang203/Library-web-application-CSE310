@@ -13,6 +13,11 @@ import Admin from "./Page/Admin";
 import Register from "./Page/Register";
 import UserPage from "./Page/UserPage";
 import PDFViewer from "./Component/PDFViewer";
+import { useContext, useEffect } from "react";
+import { UserContext } from "./global-states/UserContext";
+import { toast } from "react-toastify";
+import { getUserProfile } from "./Data/Api";
+import { AxiosError, HttpStatusCode } from "axios";
 const router = createBrowserRouter([
     {
         path: "",
@@ -82,5 +87,45 @@ const router = createBrowserRouter([
 ]);
 
 export default function Routes() {
+    const { dispatch } = useContext(UserContext);
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem("token");
+        if (storedToken) {
+            toast.promise(
+                getUserProfile(storedToken).then((d) => {
+                    dispatch({ type: "authenticated", user: d });
+                    dispatch({ type: "login", token: storedToken });
+                }),
+                {
+                    pending: "Vui lòng chờ xác thực",
+                    success: {
+                        render: "Xác thực thành công 👌",
+                        autoClose: 500
+                    },
+                    error: {
+                        render({ data }) {
+                            if (data instanceof AxiosError) {
+                                console.error({ data: data.response?.data });
+
+                                if (
+                                    data.status !== HttpStatusCode.Unauthorized &&
+                                    data.response &&
+                                    typeof data.response.data === "object" &&
+                                    data.response.data.message &&
+                                    typeof data.response.data.message === "string"
+                                )
+                                    return data.response.data.message;
+                            }
+
+                            return "Vui lòng đăng nhập lại🤯";
+                        },
+                        autoClose: 1000
+                    }
+                }
+            );
+            dispatch({ type: "login", token: storedToken });
+        }
+    }, []);
     return <RouterProvider router={router} />;
 }

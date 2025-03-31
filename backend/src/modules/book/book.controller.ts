@@ -16,7 +16,7 @@ import {
 import { BookService } from './book.service';
 import UpdateBookDto from './dto/update-book.dto';
 import { ConfigService } from '@nestjs/config';
-import { SortOrder, UserRole } from 'src/entities/user.entity';
+import { UserRole } from 'src/entities/user.entity';
 import { Roles } from 'src/decorator/roles.decorator';
 import { join, parse } from 'path';
 import { Response } from 'express';
@@ -26,7 +26,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ebookExtType, fileFilter } from 'src/utils/fileFilter';
 import { memoryStorage } from 'multer';
 import { createFolderIfAbsent, saveFile } from 'src/utils/file';
-import { BookFormat, BookSortType } from 'src/entities/book.entity';
+import { BookFormat } from 'src/entities/book.entity';
 import { Public } from 'src/decorator/public-route.decorator';
 import { checkAndGetIntValue } from 'src/utils/checkType';
 import PaginationBookDto from './dto/pagination-book.dto';
