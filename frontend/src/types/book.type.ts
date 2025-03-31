@@ -56,6 +56,8 @@ export type CreateBookType = {
     coverImageFile?: FileList;
 };
 
+export type UpdateBookType = Partial<Omit<CreateBookType, "format">>;
+
 type bookHeaders = Omit<
     Book,
     "coverImageFilename" | "contentFilename" | "description" | "stock" | "waitingBorrowCount"

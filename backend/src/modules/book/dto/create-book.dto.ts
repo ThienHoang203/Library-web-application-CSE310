@@ -10,7 +10,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { IsValidBirthDate } from 'src/decorator/is-valid-birth-date.decorator';
+import { IsValidDate } from 'src/decorator/is-valid-date.decorator';
 import { Book, BookFormat, BookGerne } from 'src/entities/book.entity';
 
 export default class CreateBookDto extends PickType(Book, [
@@ -52,7 +52,7 @@ export default class CreateBookDto extends PickType(Book, [
   @IsOptional({ always: true })
   stock: number;
 
-  @IsValidBirthDate()
+  @IsValidDate()
   @IsOptional({ always: true })
   publishedDate: Date;
 

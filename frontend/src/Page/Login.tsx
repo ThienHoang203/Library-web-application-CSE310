@@ -10,6 +10,7 @@ export default function Login() {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const { dispatch } = useContext(UserContext);
+    // const {  } = useCurrentRoute();
     const {
         register,
         handleSubmit,
@@ -41,8 +42,7 @@ export default function Login() {
             },
             success: {
                 render: "Xác thực thành công 👌",
-                autoClose: 500,
-                delay: 500
+                autoClose: 500
             },
             error: {
                 render({ data }) {
@@ -60,8 +60,7 @@ export default function Login() {
                     )
                         return "Đăng nhập không thành công🤯";
                     return data.response.data.message;
-                },
-                delay: 500
+                }
             }
         });
     }

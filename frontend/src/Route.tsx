@@ -90,8 +90,6 @@ export default function Routes() {
     const { dispatch } = useContext(UserContext);
 
     useEffect(() => {
-        console.log("Hello");
-
         const storedToken = localStorage.getItem("token");
         if (storedToken) {
             toast.promise(
