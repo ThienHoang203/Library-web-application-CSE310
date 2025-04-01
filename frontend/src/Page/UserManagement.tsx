@@ -1,38 +1,107 @@
-export default function UserManagement() {
-    const data = [
-        { id: 1, name: "0", age: 25, email: "john@example.com" },
-        { id: 2, name: "1", age: 30, email: "jane@example.com" },
-        { id: 3, name: "2", age: 22, email: "alice@example.com" },
-        { id: 4, name: "3", age: 28, email: "bob@example.com" },
-        { id: 5, name: "4", age: 35, email: "charlie@example.com" },
-      ];
-    return(
-        <table className="w-full border-collapse">
-          <thead className="bg-gray-800 text-white">
-            <tr>
-              <th className="p-4 text-left border border-gray-700">ID</th>
-              <th className="p-4 text-left border border-gray-700">Name</th>
-              <th className="p-4 text-left border border-gray-700">Age</th>
-              <th className="p-4 text-left border border-gray-700">Email</th>
-              <th className="p-4 text-left border border-gray-700">Function</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item, index) => (
-              <tr
-                key={item.id}
-                className={index % 2 === 0 ? "bg-gray-200" : "bg-gray-100"}
-              >
-                <td className="p-4 border border-gray-300">{item.id}</td>
-                <td className="p-4 border border-gray-300">{item.name}</td>
-                <td className="p-4 border border-gray-300">{item.age}</td>
-                <td className="p-4 border border-gray-300">{item.email}</td>
-                <td className="p-4 border border-gray-300">
-                  <button></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-    )
+import { useContext, useEffect, useState } from "react";
+import { User } from "../types/user.type";
+import { fetchDeleteUser, fetchGetUsers } from "../Data/Api";
+import { UserContext } from "../global-states/UserContext";
+import { toast } from "react-toastify";
+import { AxiosError } from "axios";
+import RowUserTable from "../Component/RowUserTable";
+
+export type RowUserDataType = User & {
+  "#": number;
+  functions: {
+    delete: (id: number) => void;
+    update: (id: number) => void;
+  };
 };
+
+
+export default function UserManagement() {
+  const { accessToken } = useContext(UserContext);
+  const [colDef] = useState<string[]>([
+    "#",
+    "ID",
+    "Name",
+    "Username",
+    "Email",
+    "Functions",
+  ]);
+  const [rowData, setRowData] = useState<RowUserDataType[]>([]);
+
+  useEffect(() => {
+    fetchGetUsers("/user", accessToken?.token ?? "")
+      .then((d) => {
+        if (d !== null)
+          setRowData(
+            d.map((d, index) => {
+              return {
+                ...d,
+                "#": index + 1,
+                functions: {
+                  delete: (id: number) => {
+                    toast.warn(
+                      () => (
+                        <div>
+                          <p>Are you sure?</p>
+                          <button
+                            onClick={() => {
+                              toast.promise(
+                                fetchDeleteUser(id, accessToken?.token ?? ""),
+                                {
+                                  pending: "Deleting...",
+                                  success: `Book ID:${id} deleted`,
+                                  error: `Deleted unsuccessfully!`,
+                                }
+                              );
+                            }}
+                            className=" border border-solid p-1 px-5 rounded hover:border-transparent hover:text-white hover:bg-red-500 transition:color duration-300 ease"
+                          >
+                            Sure
+                          </button>
+                        </div>
+                      ),
+                      { closeOnClick: true }
+                    );
+                  },
+                  update: (id: number) => {
+                    toast.info(() => (
+                      <div>
+                        <p>Updated book with ID: {id}</p>
+                      </div>
+                    ));
+                  },
+                },
+              };
+            })
+          );
+      })
+      .catch((e) => {
+        if (e instanceof AxiosError) {
+          if (
+            e.response &&
+            e.response.data &&
+            typeof e.response.data.message === "string"
+          ) {
+            toast.error(String(e.response.data.message));
+          }
+          console.error(e);
+        }
+      });
+  });
+
+  return (
+    <table className="w-full border-collapse">
+      <thead className="bg-gray-800 text-white">
+        <tr className="text-left [&>th]:p-4 [&>th]:border [&>th]:border-gray-700">
+          {colDef.map((item) => (
+            <th key={item}>{item}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody className="[&>tr]:even:bg-gray-300 [&>tr]:odd:bg-gray-100 [&>tr>*]:p-4  [&>tr>*]:border  [&>tr>*]:border-gray-300">
+        {rowData.map((item) => (
+          <RowUserTable key={item.id} data={item} />
+        ))}
+      </tbody>
+    </table>
+  );
+}
