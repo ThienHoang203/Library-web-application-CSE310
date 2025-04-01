@@ -39,7 +39,6 @@ const router = createBrowserRouter([
                         path: "register",
                         element: <Register redirectPage="/" endPoint="auth/signup" />
                     },
-
                     {
                         path: "user",
                         element: <User />

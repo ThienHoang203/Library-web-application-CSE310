@@ -6,7 +6,7 @@ export type User = {
     username: string;
     email: string;
     phoneNumber: string;
-    birthDate: Date;
+    birthDate: string;
     membershipLevel: string;
     role: string;
     status: string;
@@ -23,4 +23,17 @@ export const USER_HEADERS: HeaderMap<userHeaders> = {
     email: "Email",
     phoneNumber: "Phone number",
     status: "status"
+};
+
+export type ChangePasswordForm = {
+    oldPassword: string;
+    newPassword: string;
+    reConfirmNewPassword: string;
+};
+
+export type UpdateUserForm = {
+    email?: string;
+    phoneNumber?: string;
+    birthDate?: string;
+    name?: string;
 };
