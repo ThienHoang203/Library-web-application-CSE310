@@ -29,8 +29,7 @@ export function IsValidDate(validationOptions?: ValidationOptions) {
           if ((month > presentMonth && year === presentYear) || month > 12 || month < 1)
             return false;
 
-          const lastDate = new Date(year, month - 1, 0).getDate();
-
+          const lastDate = new Date(year, month, 0).getDate();
           if (
             (date > presentDate && year === presentYear && month === presentMonth) ||
             date > lastDate ||
@@ -64,7 +63,7 @@ export function IsValidDate(validationOptions?: ValidationOptions) {
           if ((month > presentMonth && year === presentYear) || month > 12 || month < 1)
             errorMessage.push('Tháng không hợp lệ');
 
-          const lastDate = new Date(year, month - 1, 0).getDate();
+          const lastDate = new Date(year, month, 0).getDate();
 
           if (
             (date > presentDate && year === presentYear && month === presentMonth) ||

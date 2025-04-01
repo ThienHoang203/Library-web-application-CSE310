@@ -12,12 +12,19 @@ export function IsValidBirthDate(validationOptions?: ValidationOptions) {
           if (typeof value !== 'string') return false;
 
           const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+          console.log(match);
 
           if (!match) return false;
 
           const year = parseInt(match[1]);
           const month = parseInt(match[2]);
           const date = parseInt(match[3]);
+
+          const lastDate = new Date(year, month, 0).getDate();
+
+          if (month < 1 || month > 12) return false;
+
+          if (date < 1 || date > lastDate) return false;
 
           const today = new Date();
           let presentYear = today.getFullYear();
@@ -46,6 +53,12 @@ export function IsValidBirthDate(validationOptions?: ValidationOptions) {
           const year = parseInt(match[1]);
           const month = parseInt(match[2]);
           const date = parseInt(match[3]);
+
+          const lastDate = new Date(year, month, 0).getDate();
+
+          if (month < 1 || month > 12) return 'Tháng sinh không hợp lệ';
+
+          if (date < 1 || date > lastDate) return 'Ngày sinh không hợp lệ';
 
           const today = new Date();
           let presentYear = today.getFullYear();

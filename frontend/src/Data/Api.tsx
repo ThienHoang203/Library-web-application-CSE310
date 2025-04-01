@@ -1,7 +1,7 @@
 import axios, { AxiosError, HttpStatusCode } from "axios";
 import { Book, CreateBookType, UpdateBookType } from "../types/book.type";
 import { LoginType, RegisterType, TokenPayloadType } from "../types/auth.type";
-import { User } from "../types/user.type";
+import { UpdateUserForm, User } from "../types/user.type";
 import { RatingType } from "../types/rating.type";
 
 const API_BASE_URL = "http://localhost:5050/api";
@@ -13,8 +13,65 @@ const api = axios.create({
     }
 });
 
-export async function viewBook(fileName: string, token: string) {
-    return api.get(`book/view/${fileName}`, { responseType: "blob", headers: { Authorization: `Bearer ${token}` } });
+export async function fetchUpdateUserInfor(
+    { birthDate, email, name, phoneNumber }: UpdateUserForm,
+    token: string
+): Promise<void> {
+    const data: any = {};
+
+    if (email) data.email = email;
+
+    if (name) data.name = name;
+
+    if (phoneNumber) data.phoneNumber = phoneNumber;
+
+    if (birthDate) data.birthDate = birthDate;
+    console.log(data);
+
+    return api.patch("user", data, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export async function fetchChangePassword(oldPassword: string, newPassword: string, token: string): Promise<void> {
+    console.log({ oldPassword, newPassword });
+
+    return api.patch(
+        "user/change-password",
+        { oldPassword, newPassword },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+}
+
+export async function viewBook(fileName: string, token: string): Promise<Blob | null> {
+    try {
+        const response = await api.get(`book/view/${fileName}`, {
+            responseType: "blob",
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const mimeType = response.headers["content-type"] || "application/octet-stream";
+
+        const blob = new Blob([response.data], { type: mimeType });
+        console.log({ blob });
+
+        return blob;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            if (error.status && error.status === HttpStatusCode.NotFound) {
+                console.error(`${fileName} not found!`);
+            }
+        } else {
+            console.error({ error });
+        }
+        return null;
+    }
 }
 
 export async function getAllRatingOfBook(bookId: number | string): Promise<RatingType[]> {

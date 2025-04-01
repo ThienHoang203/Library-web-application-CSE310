@@ -29,7 +29,10 @@ export default function Login() {
         localStorage.setItem("token", accessToken.token);
         const user = await getUserProfile(accessToken.token);
 
-        dispatch({ type: "authenticated", user: user });
+        dispatch({
+            type: "authenticated",
+            user: { ...user, created_at: new Date(user.created_at), updated_at: new Date(user.updated_at) }
+        });
         setTimeout(() => {
             navigate("/", { replace: true });
         }, 500);

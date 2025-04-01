@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { Book } from "../types/book.type";
 import { useEffect, useState } from "react";
 import { viewBook } from "../Data/Api";
-import { HttpStatusCode } from "axios";
-import defaultCoverImage from "../../public/default-book-cover-image.jpg";
+import defaultCoverImage from "/default-book-cover-image.jpg";
 
 type Props = {
     data: Book;
@@ -12,16 +11,17 @@ type Props = {
 export default function BookItemCart({ data }: Props) {
     const [coverImageLink, setCoverImageLink] = useState("");
     useEffect(() => {
-        viewBook(decodeURIComponent(data.coverImageFilename), "").then((response) => {
-            if (response.status !== HttpStatusCode.Ok) throw new Error("Failed to fetch PDF");
-
-            const blob = new Blob([response.data], { type: "application/pdf" });
-
-            const url = URL.createObjectURL(blob);
-            console.log({ url });
-
-            setCoverImageLink(url);
+        viewBook(decodeURIComponent(data.coverImageFilename), "").then((blob) => {
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                setCoverImageLink(url);
+            }
         });
+
+        // Cleanup: Hủy URL khi component unmount
+        return () => {
+            if (coverImageLink) URL.revokeObjectURL(coverImageLink);
+        };
     }, []);
 
     return (

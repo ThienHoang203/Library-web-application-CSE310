@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { viewBook } from "../Data/Api";
 import { UserContext } from "../global-states/UserContext";
-import { HttpStatusCode } from "axios";
 import { useCurrentRoute } from "../hooks/useCurrentRoute";
-
 import { Document, Page, pdfjs } from "react-pdf";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
 
@@ -13,6 +13,20 @@ export default function PDFViewer() {
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const { accessToken } = useContext(UserContext);
     const [arrPageNum, setArrPageNum] = useState<number[]>([]);
+    const navigate = useNavigate();
+
+    async function fetchPDF(fileName: string) {
+        const blob = await viewBook(decodeURIComponent(fileName), accessToken?.token ?? "");
+
+        if (blob) {
+            const url = URL.createObjectURL(blob);
+            setPdfUrl(url);
+        } else {
+            toast.error("Can not found this file!");
+            navigate("/search", { replace: true });
+        }
+    }
+
     useEffect(() => {
         const arr = path.trim().split("/");
 
@@ -23,24 +37,8 @@ export default function PDFViewer() {
         console.log({ fileName: decodeURIComponent(fileName) });
 
         if (!fileName) return;
-        async function fetchPDF() {
-            try {
-                const response = await viewBook(decodeURIComponent(fileName), accessToken?.token ?? "");
 
-                if (response.status !== HttpStatusCode.Ok) throw new Error("Failed to fetch PDF");
-
-                const blob = new Blob([response.data], { type: "application/pdf" });
-
-                const url = URL.createObjectURL(blob);
-                console.log({ url });
-
-                setPdfUrl(url);
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
-        fetchPDF();
+        fetchPDF(fileName);
 
         // Cleanup: Hủy URL khi component unmount
         return () => {
