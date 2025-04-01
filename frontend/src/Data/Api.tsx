@@ -1,6 +1,6 @@
 import axios, { AxiosError, HttpStatusCode } from "axios";
 import { Book, CreateBookType, UpdateBookType } from "../types/book.type";
-import { LoginType, RegisterType, TokenPayloadType } from "../types/auth.type";
+import { LoginType, RegisterType, TokenPayloadType, UpdateUserType } from "../types/auth.type";
 import { UpdateUserForm, User } from "../types/user.type";
 import { RatingType } from "../types/rating.type";
 
@@ -35,43 +35,11 @@ export async function fetchUpdateUserInfor(
     });
 }
 
-export async function fetchChangePassword(oldPassword: string, newPassword: string, token: string): Promise<void> {
-    console.log({ oldPassword, newPassword });
-
-    return api.patch(
-        "user/change-password",
-        { oldPassword, newPassword },
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-    );
-}
-
-export async function viewBook(fileName: string, token: string): Promise<Blob | null> {
-    try {
-        const response = await api.get(`book/view/${fileName}`, {
-            responseType: "blob",
-            headers: { Authorization: `Bearer ${token}` }
-        });
-
-        const mimeType = response.headers["content-type"] || "application/octet-stream";
-
-        const blob = new Blob([response.data], { type: mimeType });
-        console.log({ blob });
-
-        return blob;
-    } catch (error) {
-        if (error instanceof AxiosError) {
-            if (error.status && error.status === HttpStatusCode.NotFound) {
-                console.error(`${fileName} not found!`);
-            }
-        } else {
-            console.error({ error });
-        }
-        return null;
-    }
+export async function viewBook(fileName: string, token: string) {
+    return api.get(`book/view/${fileName}`, {
+        responseType: "blob",
+        headers: { Authorization: `Bearer ${token}` }
+    });
 }
 
 export async function getAllRatingOfBook(bookId: number | string): Promise<RatingType[]> {
@@ -91,6 +59,21 @@ export async function fetchGetBooks(endpoint: string): Promise<Book[] | null> {
     }
     return response.data.data.books;
 }
+
+export async function fetchChangePassword(oldPassword: string, newPassword: string, token: string): Promise<void> {
+    console.log({ oldPassword, newPassword });
+
+    return api.patch(
+        "user/change-password",
+        { oldPassword, newPassword },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+}
+
 export async function fetchUpdateBook(data: UpdateBookType, token: string, id: string | number): Promise<void> {
     const formData = new FormData();
 
@@ -112,10 +95,36 @@ export async function fetchUpdateBook(data: UpdateBookType, token: string, id: s
     console.log({ data });
     try {
         const response = await api.patch(`book/${id}`, formData, {
-            headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data"
+            }
         });
 
         return response.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+export async function fetchUpdateUser(data: UpdateUserType, token: string): Promise<void> {
+    const formData = new FormData();
+
+    if (data.name) formData.append("name", data.name);
+    if (data.email) formData.append("email", data.email);
+    if (data.phoneNumber) formData.append("phoneNumber", data.phoneNumber);
+    if (data.birthDate) formData.append("publishedDate", String(data.birthDate));
+
+    console.log({ data });
+    try {
+        const response = await api.patch(`user`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "multipart/form-data"
+            }
+        });
+        console.log(response.data);
+
+        return response.data;
     } catch (error) {
         console.log(error);
     }
@@ -142,7 +151,7 @@ export async function fetchCreateBook(endPoint: string, data: CreateBookType, to
     if (data.genre) formData.append("genre", data.genre);
     if (data.description) formData.append("description", data.description);
     if (data.stock) formData.append("stock", data.stock.toString());
-    if (data.publishedDate) formData.append("publishedDate", data.publishedDate.toISOString());
+    if (data.publishedDate) formData.append("publishedDate", String(data.publishedDate));
     if (data.version) formData.append("version", data.version.toString());
 
     if (data.ebookFile && data.ebookFile[0]) {
@@ -153,7 +162,10 @@ export async function fetchCreateBook(endPoint: string, data: CreateBookType, to
         formData.append("coverImageFile", data.coverImageFile[0]);
     }
     const response = await api.post(endPoint, formData, {
-        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data"
+        }
     });
     if (response.status !== HttpStatusCode.Created || typeof response.data === "undefined") {
         return null;
@@ -163,7 +175,20 @@ export async function fetchCreateBook(endPoint: string, data: CreateBookType, to
 }
 
 export async function fetchDeleteBook(bookId: string | number, token: string): Promise<boolean> {
-    const response = await api.delete(`book/${bookId}`, { headers: { Authorization: `Bearer ${token}` } });
+    const response = await api.delete(`book/${bookId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (response.status !== HttpStatusCode.Ok) {
+        return false;
+    }
+    return true;
+}
+
+export async function fetchDeleteUser(bookId: string | number, token: string): Promise<boolean> {
+    const response = await api.delete(`user/${bookId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+    });
 
     if (response.status !== HttpStatusCode.Ok) {
         return false;
@@ -250,7 +275,9 @@ export const createUser = async (endpoint: string) => {
 };
 
 export async function getTokenPayload(token: string): Promise<TokenPayloadType> {
-    const reponse = await api.get("auth/token-payload", { headers: { Authorization: `Bearer ${token}` } });
+    const reponse = await api.get("auth/token-payload", {
+        headers: { Authorization: `Bearer ${token}` }
+    });
     if (reponse.status !== HttpStatusCode.Ok) throw new AxiosError("Token không hợp lệ, vui lòng đăng nhập lại");
     return reponse.data.data;
 }
@@ -263,7 +290,10 @@ export const LoginNormal = async (
 
     if (!response.data || !response.data.data || !response.data.data.token) throw new Error("Lỗi");
 
-    return { token: response.data.data.token, exprires_in: response.data.data.expries_in };
+    return {
+        token: response.data.data.token,
+        exprires_in: response.data.data.expries_in
+    };
 };
 
 export async function fetchRegisterUser(endpoint: string, data: RegisterType) {

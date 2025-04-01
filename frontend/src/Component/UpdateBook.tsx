@@ -40,12 +40,13 @@ export default function UpdateBook({ bookId, setClose }: Props) {
     });
 
     return (
-        <div className="bg-white shadow-[0,0,0,rgba(0,0,0,0.5)] fixed top-[0%] right-[40%]">
-            <button onClick={() => setClose()}>X</button>
+        <div className="border-2 bg-white border-black shadow-[0,0,0,rgba(0,0,0,0.5)] fixed top-[0%] right-[40%] text-center">
+            <button onClick={() => setClose()}  className="absolute right-[50px] top-[10px] text-black font-bold px-3 py-1.5 rounded-md border border-black  hover:cursor-pointer hover:text-white hover:bg-black  transform:hover  duration-300 ease">X</button>
+            <h2 className="font-medium text-[25px] pt-3 pb-1">Add New Book</h2>
             <form
                 noValidate
                 action="#"
-                className="pb-12 px-12 div-form-style input-div-form-style"
+                className="pb-5 px-12 div-form-style "
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div>
@@ -56,6 +57,7 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                         type="text"
                         id="title"
                         required
+                         className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         {...register("title", {
                             required: "You must enter book's title",
                             minLength: { value: 2, message: "Nho3 hon7 2" }
@@ -75,6 +77,7 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                         type="text"
                         id="author"
                         required
+                         className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         {...register("author", {
                             required: "You must enter book's author",
                             maxLength: {
@@ -93,6 +96,7 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                     <select
                         id="genre"
                         required
+                         className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         {...register("genre", {
                             setValueAs(value) {
                                 if (!value || value === "") return undefined;
@@ -124,6 +128,7 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                     <input
                         type="text"
                         id="description"
+                         className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         required
                         {...register("description", {
                             setValueAs(value) {
@@ -139,12 +144,11 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                 </div>
 
                 <div>
-                    <span className="absolute right-2 text-xl leading-[50px]">
-                        <i className="fa-solid fa-pen-to-square"></i>
-                    </span>
+                
                     <input
                         type="date"
                         id="publishedDate"
+                         className=" w-full h-full outline-none pt-3 pr-2 pl-2 font-medium"
                         required
                         {...register("publishedDate", {
                             setValueAs(value) {
@@ -170,6 +174,7 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                         type="text"
                         id="stock"
                         required
+                         className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         {...register("stock", {
                             setValueAs(value) {
                                 if (!value || value === "") return undefined;
@@ -197,6 +202,7 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                     </span>
                     <input
                         type="text"
+                         className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         id="version"
                         {...register("version", {
                             setValueAs(value) {
@@ -215,7 +221,8 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                     <span className="absolute right-2 text-xl leading-[50px]">
                         <i className="fa-solid fa-cloud-arrow-up"></i>
                     </span>
-                    <input type="file" id="version" required {...register("ebookFile")} accept=".pdf,.epub" />
+                    <input type="file" id="version" required {...register("ebookFile")} accept=".pdf,.epub"
+                    className=" w-full h-full outline-none  pr-11 pt-4 pl-2 font-medium" />
                     {errors.ebookFile && <ErrorFormMessage message={errors.ebookFile.message} />}
                     <label
                         htmlFor="coverImageFile"
@@ -229,7 +236,8 @@ export default function UpdateBook({ bookId, setClose }: Props) {
                     <span className="absolute right-2 text-xl leading-[50px]">
                         <i className="fa-solid fa-cloud-arrow-up"></i>
                     </span>
-                    <input type="file" id="version" required {...register("coverImageFile")} accept=".jpg,.jpeg,.png" />
+                    <input type="file" id="version" required {...register("coverImageFile")} accept=".jpg,.jpeg,.png" 
+                    className=" w-full h-full outline-none  pr-11 pt-4 pl-2 font-medium"/>
                     {errors.coverImageFile && <ErrorFormMessage message={errors.coverImageFile.message} />}
                     <label
                         htmlFor="coverImageFile"

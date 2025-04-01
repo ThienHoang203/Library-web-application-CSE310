@@ -37,22 +37,22 @@ export default function SideMenu() {
     };
     useEffect(() => {
         navigate("/search", { state: searchData });
-    }, [searchData.genre]);
+    }, [navigate, searchData]);
 
     return (
         <div className="overflow-hidden text-center">
             <div className="w-screen flex flex-wrap mt-10">
-                <form className="max-w-screen-xl mx-auto p-5 my-4 " onSubmit={handleSubmit}>
+                <form className="max-w-screen-xl mx-auto mb-15 " onSubmit={handleSubmit}>
                     <input
                         type="text"
                         name="title"
                         value={searchData.title}
                         onChange={handleChange}
-                        className="w-[600px] p-2 border-3 border-[#ccb552] rounded-2xl text-[20px] outline-none"
+                        className="w-[600px] py-1 px-3  border-3 border-[#ccb552] rounded-2xl text-[20px] outline-none"
                     />
                     <button
                         type="submit"
-                        className="ml-5 w-[180px] hover:cursor-pointer border-3 border-[#ccb552] rounded-2xl text-[20px] font-bold pb-1 hover:border-[black] hover:bg-black hover:text-[#ccb552]"
+                        className="ml-5 w-[180px] hover:cursor-pointer py-1 border-3 border-[#ccb552] rounded-2xl text-[20px] font-bold  hover:border-[black] hover:bg-black hover:text-[#ccb552]"
                     >
                         <i className="fa fa-solid fa-magnifying-glass pr-3"></i>
                         Search

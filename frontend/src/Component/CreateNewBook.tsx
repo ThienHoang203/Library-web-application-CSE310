@@ -99,7 +99,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
     };
 
     return (
-        <div className="text-center wrapper-login mx-auto my-5 relative w-xl border-2 bg-white border-black rounded-2xl shadow-[0px_0px_20px_rgba(0,0,0,1)]">
+        <div className="text-center mx-auto relative w-xl border-2 bg-white border-black rounded-2xl shadow-[0px_0px_20px_rgba(0,0,0,1)]">
             {closeFunction && (
                 <button
                     onClick={closeFunction}
@@ -109,12 +109,12 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                 </button>
             )}
 
-            <h2 className="font-medium text-[35px] pt-10">Thêm sách mới</h2>
+            <h2 className="font-medium text-[25px] pt-3">Add New Book</h2>
 
             <form
                 noValidate
                 action="#"
-                className="pb-12 px-12 div-form-style input-div-form-style"
+                className="pb-5 px-12 div-form-style"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div>
@@ -125,13 +125,15 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                         type="text"
                         id="title"
                         required
+                        
+                                  className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         {...register("title", {
                             required: "You must enter book's title",
                             minLength: { value: 2, message: "Nho3 hon7 2" }
                         })}
                     />
                     {errors.title && <ErrorFormMessage message={errors.title.message} />}
-                    <label htmlFor="title" className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] ">
+                    <label htmlFor="title" className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] ">
                         Title
                     </label>
                 </div>
@@ -143,6 +145,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                     <input
                         type="text"
                         id="author"
+                                className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         required
                         {...register("author", {
                             required: "You must enter book's author",
@@ -153,7 +156,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                         })}
                     />
                     {errors.author && <ErrorFormMessage message={errors.author.message} />}
-                    <label htmlFor="author" className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] ">
+                    <label htmlFor="author" className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] ">
                         Author
                     </label>
                 </div>
@@ -163,6 +166,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                         defaultValue={""}
                         id="format"
                         required
+                                className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         {...register("format", { required: "Vui lòng chọn định dạng sách!" })}
                     >
                         <option disabled value="">
@@ -176,7 +180,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                         ))}
                     </select>
                     {errors.format && <ErrorFormMessage message={errors.format.message} />}
-                    <label htmlFor="format" className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] ">
+                    <label htmlFor="format" className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] ">
                         Format
                     </label>
                 </div>
@@ -184,6 +188,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                 <div>
                     <select
                         id="genre"
+                                className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         required
                         {...register("genre", {
                             setValueAs(value) {
@@ -204,7 +209,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                         ))}
                     </select>
                     {errors.genre && <ErrorFormMessage message={errors.genre.message} />}
-                    <label htmlFor="genre" className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] ">
+                    <label htmlFor="genre" className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] ">
                         Genre
                     </label>
                 </div>
@@ -216,6 +221,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                     <input
                         type="text"
                         id="description"
+                                className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         required
                         {...register("description", {
                             setValueAs(value) {
@@ -225,18 +231,17 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                         })}
                     />
                     {errors.description && <ErrorFormMessage message={errors.description.message} />}
-                    <label htmlFor="description" className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] ">
+                    <label htmlFor="description" className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] ">
                         Description
                     </label>
                 </div>
 
                 <div>
-                    <span className="absolute right-2 text-xl leading-[50px]">
-                        <i className="fa-solid fa-pen-to-square"></i>
-                    </span>
+               
                     <input
                         type="date"
                         id="publishedDate"
+                                className=" w-full h-full outline-none pt-3 pr-2 pl-2 font-medium"
                         required
                         {...register("publishedDate", {
                             setValueAs(value) {
@@ -248,7 +253,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                     {errors.publishedDate && <ErrorFormMessage message={errors.publishedDate.message} />}
                     <label
                         htmlFor="publishedDate"
-                        className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] "
+                        className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] "
                     >
                         Published Date
                     </label>
@@ -261,6 +266,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                     <input
                         type="text"
                         id="stock"
+                         className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         required
                         {...register("stock", {
                             setValueAs(value) {
@@ -278,7 +284,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                         })}
                     />
                     {errors.stock && <ErrorFormMessage message={errors.stock.message} />}
-                    <label htmlFor="stock" className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] ">
+                    <label htmlFor="stock" className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] ">
                         Stock
                     </label>
                 </div>
@@ -290,6 +296,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                     <input
                         type="text"
                         id="version"
+                         className=" w-full h-full outline-none pt-3 pr-11 pl-2 font-medium"
                         {...register("version", {
                             setValueAs(value) {
                                 if (!value || value === "") return undefined;
@@ -298,7 +305,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                         })}
                     />
                     {errors.version && <ErrorFormMessage message={errors.version.message} />}
-                    <label htmlFor="version" className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] ">
+                    <label htmlFor="version" className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] ">
                         Version
                     </label>
                 </div>
@@ -307,11 +314,12 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                     <span className="absolute right-2 text-xl leading-[50px]">
                         <i className="fa-solid fa-cloud-arrow-up"></i>
                     </span>
-                    <input type="file" id="version" required {...register("ebookFile")} accept=".pdf,.epub" />
+                    <input type="file" id="version" required {...register("ebookFile")} accept=".pdf,.epub"
+                     className=" w-full h-full outline-none  pr-11 pt-4 pl-2 font-medium" />
                     {errors.coverImageFile && <ErrorFormMessage message={errors.coverImageFile.message} />}
                     <label
                         htmlFor="coverImageFile"
-                        className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] "
+                        className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] "
                     >
                         Ebook File
                     </label>
@@ -321,11 +329,12 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
                     <span className="absolute right-2 text-xl leading-[50px]">
                         <i className="fa-solid fa-cloud-arrow-up"></i>
                     </span>
-                    <input type="file" id="version" required {...register("coverImageFile")} accept=".jpg,.jpeg,.png" />
+                    <input type="file" id="version" required {...register("coverImageFile")} accept=".jpg,.jpeg,.png" 
+                    className=" w-full h-full outline-none pr-11 pt-4 pl-2 font-medium"/>
                     {errors.coverImageFile && <ErrorFormMessage message={errors.coverImageFile.message} />}
                     <label
                         htmlFor="coverImageFile"
-                        className="absolute left-2 font-medium -translate-y-1/2  top-[-2px] "
+                        className="absolute left-2 font-medium -translate-y-1/3  top-[-2px] "
                     >
                         Cover Image File
                     </label>
@@ -333,7 +342,7 @@ export default function CreateNewBook({ endPoint, closeFunction }: Props) {
 
                 <button
                     type="submit"
-                    className=" h-[45px] text-white text-xl font-medium bg-black rounded-lg hover:cursor-pointer"
+                    className=" h-[45px] text-white text-xl px-4 font-medium bg-black rounded-lg hover:cursor-pointer"
                 >
                     Add book
                 </button>

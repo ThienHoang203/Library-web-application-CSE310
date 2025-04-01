@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { Button, Slider, TextField } from "@mui/material";
 import { Checkbox } from "@mui/material";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { fetchGetABook, getAllRatingOfBook } from "../Data/Api";
+import { fetchGetABook, getAllRatingOfBook, viewBook } from "../Data/Api";
 import { toast } from "react-toastify";
 import { RatingType } from "../types/rating.type";
 import { Book } from "../types/book.type";
+import { HttpStatusCode } from "axios";
+import defaultCoverImage from "/vite.svg";
 
 export default function Single() {
     const [rating, setRating] = useState(3);
@@ -22,6 +24,21 @@ export default function Single() {
         if (onlyRating) setReview("");
         console.log(review);
     }
+    const [coverImageLink, setCoverImageLink] = useState("");
+    useEffect(() => {
+        if (book) {
+            viewBook(decodeURIComponent(book.coverImageFilename), "").then((response) => {
+                if (response.status !== HttpStatusCode.Ok) throw new Error("Failed to fetch PDF");
+
+                const blob = new Blob([response.data], { type: "application/pdf" });
+
+                const url = URL.createObjectURL(blob);
+                console.log({ url });
+
+                setCoverImageLink(url);
+            });
+        }
+    }, [book]);
 
     useEffect(() => {
         const bookId = params?.bookId;
@@ -96,8 +113,13 @@ export default function Single() {
         <div className="text-3xl p-10">Loading...</div>
     ) : (
         <div className="bg-gray-200 flex flex-wrap">
-            <div className="w-[300px] m-4 story-img">
-                <img src="/img/book.jpg" alt="Thanh Sơn" className="w-fit h-fit rounded" />
+            <div className="w-[200px] h-[280px] m-4 story-img">
+                <img
+                    src={coverImageLink === "" ? defaultCoverImage : coverImageLink}
+                    alt="Pool"
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                />
             </div>
             <div className="w-[770px] text-left p-5 ">
                 <div className="mt-3 mb-7">
@@ -105,16 +127,15 @@ export default function Single() {
                     <p className="text-gray-600">{book.author}</p>
                 </div>
                 <div className="flex flex-nowrap gap-2">
-                    <button className="flex items-center gap-2 bg-red-700 text-white font-medium  py-1 px-2 rounded hover:bg-[black] hover:text-[#ccb552] hover:cursor-pointer">
-                        <Link
-                            target="_blank"
-                            to={`/view/${decodeURIComponent(book.contentFilename)}`}
-                            relative="path"
-                            state={{ filename: book.contentFilename ?? "" }}
-                        >
-                            <i className="fa-solid fa-book-open"></i> <p>Đọc Sách</p>
-                        </Link>
-                    </button>
+                    <Link
+                        target="_blank"
+                        to={`/view/${decodeURIComponent(book.contentFilename)}`}
+                        relative="path"
+                        state={{ filename: book.contentFilename ?? "" }}
+                        className="flex flex-nowrap items-center gap-2 bg-red-700 text-white font-medium  py-1 px-2 rounded hover:bg-[black] hover:text-[#ccb552] hover:cursor-pointer"
+                    >
+                        <i className="fa-solid fa-book-open"></i> <p>Đọc Sách</p>
+                    </Link>
 
                     <button className="ml-2 flex items-center gap-2 bg-yellow-700 text-white font-medium py-1 px-2 rounded  hover:bg-[black] hover:text-[#ccb552] hover:cursor-pointer">
                         <i className="far fa-bookmark"></i> <p>Đánh Dấu</p>
@@ -122,22 +143,22 @@ export default function Single() {
 
                     <button className="ml-2 flex items-center gap-2 bg-green-700 text-white font-medium py-1 px-2 rounded  hover:bg-[black] hover:text-[#ccb552] hover:cursor-pointer relative">
                         <i className="fas fa-star"></i> <p>Đánh Giá</p>
-                        <span className="absolute bg-black rounded-full py-1 px-2 -right-6 -top-4 text-[12px] text-[#ccb552] ">
+                        <span className="absolute bg-black rounded-full py-1 px-2 -right-5 -top-4 text-[12px] text-[#ccb552] ">
                             {averageRating}
                         </span>
                     </button>
                 </div>
                 <div className="mt-3 flex gap-2">
                     <span className="font-medium px-4 text-center">
-                        <p>79,544</p>
+                        <p>0</p>
                         <p>Lượt đọc</p>
                     </span>
                     <span className="font-medium px-4 border-l-2 text-center">
-                        <p>605</p>
+                        <p>0</p>
                         <p>Cất giữ</p>
                     </span>
                     <span className="font-medium  px-4 border-l-2 text-center">
-                        <p>1,188</p>
+                        <p>0</p>
                         <p>Đánh giá</p>
                     </span>
                 </div>
@@ -152,7 +173,7 @@ export default function Single() {
                     <h5>Giới Thiệu</h5>
                 </div>
                 <div className="intro-content p-2 text-black">
-                    <p>đây là nội dung của phần giới thiệu </p>
+                    <p>{book.description}</p>
                 </div>
             </div>
             <div className=" text-left w-full ">
@@ -182,13 +203,6 @@ export default function Single() {
                     </div>
                     {!onlyRating && (
                         <div className="space-y-3 mt-4">
-                            {/* <TextField
-            fullWidth
-            variant="outlined"
-            label="Nhân vật chính như nào?"
-            className="bg-gray-900 border border-gray-700 rounded"
-          /> */}
-
                             <TextField
                                 fullWidth
                                 multiline

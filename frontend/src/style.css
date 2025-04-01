@@ -1,11 +1,9 @@
 @import "tailwindcss";
 
-.input-div-form-style {
-    @apply [&_input,select]:w-full [&_input,select]:h-full [&_input,select]:outline-none [&_input,select]:pr-11 [&_input,select]:pl-2 [&_input,select]:font-medium;
-}
+
 
 .div-form-style {
-    @apply [&>div]:relative [&>div]:w-full [&>div]:h-[50px] [&>div]:border-b-2 [&>div]:my-[30px];
+    @apply [&>div]:relative [&>div]:w-full [&>div]:h-[45px] [&>div]:border-b-2 [&>div]:my-[18px];
 }
 
 .error-form-style {

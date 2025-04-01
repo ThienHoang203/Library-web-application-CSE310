@@ -39,7 +39,6 @@ const router = createBrowserRouter([
                         path: "register",
                         element: <Register redirectPage="/" endPoint="auth/signup" />
                     },
-
                     {
                         path: "user",
                         element: <User />
@@ -94,10 +93,7 @@ export default function Routes() {
         if (storedToken) {
             toast.promise(
                 getUserProfile(storedToken).then((d) => {
-                    dispatch({
-                        type: "authenticated",
-                        user: { ...d, created_at: new Date(d.created_at), updated_at: new Date(d.updated_at) }
-                    });
+                    dispatch({ type: "authenticated", user: d });
                     dispatch({ type: "login", token: storedToken });
                 }),
                 {
@@ -109,6 +105,8 @@ export default function Routes() {
                     error: {
                         render({ data }) {
                             if (data instanceof AxiosError) {
+                                console.error({ data: data.response?.data });
+
                                 if (
                                     data.status !== HttpStatusCode.Unauthorized &&
                                     data.response &&
