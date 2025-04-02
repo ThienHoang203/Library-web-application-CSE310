@@ -44,17 +44,13 @@ export default function User() {
             <div className="bg-gray-900 text-white rounded-lg w-[440px] p-4 text-center my-4">
                 <img src="/img/book.jpg" alt="User Avatar" className="w-20 h-20 rounded-full mx-auto mb-2" />
                 <h2 className="text-lg font-bold">{user?.name}</h2>
-                {/* <p className="italic text-gray-400">{diffYears}</p> */}
                 <div className="mt-4 p-4 text-left border-b-3">
-                    {/* <p className="p-3">
-                        <strong>ĐÁNH DẤU</strong> <span className="float-right font-medium">0</span>
-                    </p>
-                    <p className="p-3">
-                        <strong>ĐÁNH 
-                        GIÁ</strong> <span className="float-right font-medium">0</span>
-                    </p> */}
+           
                     <p className="p-3">
                         <strong>Email</strong> <span className="float-right font-medium">{user?.email}</span>
+                    </p>
+                    <p className="p-3">
+                        <strong>Birth Date</strong> <span className="float-right font-medium">{user.birthDate}</span>
                     </p>
                     <p className="p-3">
                         <strong>Membership Level</strong>{" "}

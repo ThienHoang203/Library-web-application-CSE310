@@ -25,7 +25,7 @@ export default function BookItemCart({ data }: Props) {
     }, []);
 
     return (
-        <div className="w-[200px] m-2 p-4" key={data.id}>
+        <div className="w-[200px] m-2 p-4"  key={data.id}>
             <Link to={`${data.id}`}>
                 <div className="hover:shadow-[0px_0px_20px_rgba(0,0,0,1)] rounded-b-2xl border hover:cursor-pointer bg-white">
                     <div className="h-[200px]">
