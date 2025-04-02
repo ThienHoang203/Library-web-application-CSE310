@@ -2,7 +2,12 @@ import { PickType } from '@nestjs/mapped-types';
 import CreateUserDto from './create-user.dto';
 import { IsOptional } from 'class-validator';
 
-export default class UpdateUserDto extends PickType(CreateUserDto, ['email', 'name', 'phoneNumber', 'birthDate']) {
+export default class UpdateUserDto extends PickType(CreateUserDto, [
+  'email',
+  'name',
+  'phoneNumber',
+  'birthDate',
+]) {
   @IsOptional()
   email: string;
 
@@ -11,4 +16,7 @@ export default class UpdateUserDto extends PickType(CreateUserDto, ['email', 'na
 
   @IsOptional()
   birthDate: Date;
+
+  @IsOptional()
+  name: string;
 }

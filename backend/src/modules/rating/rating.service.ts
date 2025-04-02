@@ -6,6 +6,7 @@ import { Rating } from 'src/entities/rating.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Book } from 'src/entities/book.entity';
+import FillRatingDto from './dto/fill-rating.dto';
 
 @Injectable()
 export class RatingService {
@@ -47,10 +48,19 @@ export class RatingService {
     return rating;
   }
 
-  async findAllByBookID(bookId: number): Promise<{ totalRatings: number; ratings: Rating[] }> {
-    const [ratings, count] = await this.ratingRepository.findAndCountBy({ bookId });
+  async fillRating({
+    bookId,
+    rating,
+  }: FillRatingDto): Promise<{ totalRatings: number; ratings: Rating[] }> {
+    let where: any = {};
 
-    return { totalRatings: count, ratings };
+    if (bookId) where.bookId = bookId;
+
+    if (rating) where.rating = rating;
+
+    const ratings = await this.ratingRepository.find({ where: where });
+
+    return { totalRatings: ratings.length, ratings };
   }
 
   async findAllByUserId(userId: number): Promise<{ totalRatings: number; ratings: Rating[] }> {

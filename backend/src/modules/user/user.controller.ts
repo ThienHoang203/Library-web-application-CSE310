@@ -87,6 +87,8 @@ export class UserController {
   @Patch('change-password')
   @ResponseMessage('Cập nhật mật khẩu thành công.')
   updateMyPassword(@Req() req: Request, @Body() userData: UpdatePasswordUserDto) {
+    console.log({ userData });
+
     if (!req.user || Object.keys(req.user).length === 0)
       throw new BadRequestException('accessToken không có payload');
 

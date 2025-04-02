@@ -1,7 +1,6 @@
 import { PickType } from '@nestjs/mapped-types';
 import { Type } from 'class-transformer';
 import {
-  IsDateString,
   IsDecimal,
   IsEnum,
   IsInt,
@@ -11,14 +10,14 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import { IsValidBirthDate } from 'src/decorator/is-valid-birth-date.decorator';
+import { IsValidDate } from 'src/decorator/is-valid-date.decorator';
 import { Book, BookFormat, BookGerne } from 'src/entities/book.entity';
 
 export default class CreateBookDto extends PickType(Book, [
   'author',
   'description',
   'format',
-  'gerne',
+  'genre',
   'publishedDate',
   'stock',
   'title',
@@ -36,7 +35,7 @@ export default class CreateBookDto extends PickType(Book, [
 
   @IsEnum(BookGerne, { message: 'thể loại sách không đúng định dạng' })
   @IsOptional({ always: true })
-  gerne: BookGerne;
+  genre: BookGerne;
 
   @MaxLength(1000, { message: 'mô tả sách không được vượt quá 1000 kí tự' })
   @IsString({ message: 'mô tả sách phải là chuỗi' })
@@ -53,7 +52,7 @@ export default class CreateBookDto extends PickType(Book, [
   @IsOptional({ always: true })
   stock: number;
 
-  @IsValidBirthDate()
+  @IsValidDate()
   @IsOptional({ always: true })
   publishedDate: Date;
 

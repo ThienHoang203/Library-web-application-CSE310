@@ -62,7 +62,7 @@ export class User extends AbstractEntity {
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE, nullable: false })
   status: UserStatus;
 
-  @Column({ type: 'varchar', length: 50, nullable: true })
+  @Column({ type: 'varchar', length: 50, nullable: false })
   name: string;
 
   @Column({ type: 'varchar', length: 200, nullable: false, unique: true })

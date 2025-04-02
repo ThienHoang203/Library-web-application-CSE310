@@ -24,7 +24,7 @@ export enum BookSortType {
   TITLE = 'title',
   FORMAT = 'format',
   AUTHOR = 'author',
-  GERNE = 'gerne',
+  GENRE = 'genre',
   STOCK = 'stock',
   WAITING_BORROW_COUNT = 'waitingBorrowCount',
   PUBLISHED_DATE = 'publishedDate',
@@ -51,7 +51,7 @@ export class Book extends AbstractEntity {
   contentFilename: string;
 
   @Column({ type: 'enum', enum: BookGerne, nullable: true })
-  gerne: BookGerne;
+  genre: BookGerne;
 
   @Column({ type: 'text', nullable: true })
   description: string;

@@ -12,43 +12,65 @@ export function IsValidBirthDate(validationOptions?: ValidationOptions) {
           if (typeof value !== 'string') return false;
 
           const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+          console.log(match);
+
           if (!match) return false;
-          const [, year, month, day] = match.map(Number);
-          console.log({ match: match.map(Number) });
+
+          const year = parseInt(match[1]);
+          const month = parseInt(match[2]);
+          const date = parseInt(match[3]);
+
+          const lastDate = new Date(year, month, 0).getDate();
 
           if (month < 1 || month > 12) return false;
 
-          const lastDay = new Date(year, month, 0).getDate();
-          if (day < 1 || day > lastDay) return false;
+          if (date < 1 || date > lastDate) return false;
 
-          if (year > new Date().getFullYear()) return false;
+          const today = new Date();
+          let presentYear = today.getFullYear();
+          let presentMonth = today.getMonth() + 1;
+          let presentDate = today.getDate();
+          // const today = new Date().toISOString().split('T')[0].split('-');
+          console.log({ presentDate, date, presentMonth, month });
 
-          return true;
+          let age = presentYear - year;
+          console.log({ age });
+          if (month > presentMonth || (month == presentMonth && date > presentDate)) age--;
+
+          console.log({ age });
+
+          return age >= 15;
         },
         defaultMessage(args: ValidationArguments) {
           const value = args.value;
-          const errors: string[] = [];
 
           if (typeof value !== 'string') return 'Ngày sinh phải là chuỗi';
-          if (!value.match(/^\d{4}-\d{2}-\d{2}$/)) return 'Định dạng phải là YYYY-MM-DD';
 
-          const [_, yearStr, monthStr, dayStr] = value.match(/^(\d{4})-(\d{2})-(\d{2})$/) || [];
+          const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
 
-          const year = +yearStr,
-            month = +monthStr,
-            day = +dayStr;
+          if (!match) return 'Định dạng phải là YYYY-MM-DD';
 
-          if (month < 1 || month > 12) errors.push('Tháng không hợp lệ');
+          const year = parseInt(match[1]);
+          const month = parseInt(match[2]);
+          const date = parseInt(match[3]);
 
-          if (year > new Date().getFullYear()) errors.push('Năm vượt quá hiện tại');
+          const lastDate = new Date(year, month, 0).getDate();
 
-          if (month >= 1 && month <= 12) {
-            const lastDay = new Date(year, month, 0).getDate();
-            if (day < 1 || day > lastDay) errors.push('Ngày không hợp lệ');
-          }
-          console.log({ errors });
+          if (month < 1 || month > 12) return 'Tháng sinh không hợp lệ';
 
-          return errors.length > 0 ? `${errors.join(', ')}.` : 'Ngày sinh không hợp lệ';
+          if (date < 1 || date > lastDate) return 'Ngày sinh không hợp lệ';
+
+          const today = new Date();
+          let presentYear = today.getFullYear();
+          let presentMonth = today.getMonth();
+          let presentDate = today.getDate();
+          // const today = new Date().toISOString().split('T')[0].split('-');
+
+          let age = year - presentYear;
+
+          if (month > presentMonth || (month == presentMonth && date > presentDate)) age--;
+
+          return age < 15 ? 'Chưa đủ 15 tuổi!' : 'Ngày sinh không hợp lệ';
         },
       },
     });
