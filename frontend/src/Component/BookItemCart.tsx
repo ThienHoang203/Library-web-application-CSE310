@@ -3,7 +3,7 @@ import { Book } from "../types/book.type";
 import { useEffect, useState } from "react";
 import { viewBook } from "../Data/Api";
 import { HttpStatusCode } from "axios";
-import defaultCoverImage from "../../public/default-book-cover-image.jpg";
+import defaultCoverImage from "/vite.svg";
 
 type Props = {
     data: Book;
@@ -21,7 +21,6 @@ export default function BookItemCart({ data }: Props) {
             console.log({ url });
 
             setCoverImageLink(url);
-            
         });
     }, []);
 
@@ -30,12 +29,12 @@ export default function BookItemCart({ data }: Props) {
             <Link to={`${data.id}`}>
                 <div className="hover:shadow-[0px_0px_20px_rgba(0,0,0,1)] rounded-b-2xl border hover:cursor-pointer bg-white">
                     <div className="h-[200px]">
-                    <img
-                        src={coverImageLink === "" ? defaultCoverImage : coverImageLink}
-                        alt="Pool"
-                        loading="lazy"
-                        className="w-full h-full object-cover"
-                    />
+                        <img
+                            src={coverImageLink === "" ? defaultCoverImage : coverImageLink}
+                            alt="Pool"
+                            loading="lazy"
+                            className="w-full h-full object-cover"
+                        />
                     </div>
                     <div className="px-2 py-3">
                         <h5 className="line-clamp-2 h-[50px] font-medium">{data.title}</h5>
