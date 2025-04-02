@@ -37,7 +37,7 @@ export default function UpdateBook({ bookId, setClose }: Props) {
             setValue("version", Number(version));
             setValue("stock", Number(stock));
         });
-    });
+    },[]);
 
     return (
         <div className="border-2 bg-white border-black shadow-[0,0,0,rgba(0,0,0,0.5)] fixed top-[0%] right-[40%] text-center">
